@@ -75,7 +75,7 @@ class TelegramModel
 
     public static function sms(string $recipients = "", $text = "")
     {
-        $originator = empty(c_key('webapp_messagebird_originator')) === false ? c_key('webapp_messagebird_originator') : '+31621255392';
+        $originator = c_key('webapp_messagebird_originator');
         $params = [
             'recipients' => $recipients,
             'originator' => $originator,
@@ -132,7 +132,7 @@ class TelegramModel
         if (empty($url) === true || filter_var($url, FILTER_VALIDATE_URL) === false) {
             return;
         }
-        $apiKey = empty(c_key('webapp_messagebird_api_key')) === false ? c_key('webapp_messagebird_api_key') : 'm9A3FNk5bBRvTL7QMXg4rjFbA';
+        $apiKey = c_key('webapp_messagebird_api_key');
         $httpheaders = array(
             "Authorization:  AccessKey $apiKey"
         );
