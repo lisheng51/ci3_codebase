@@ -1,0 +1,1 @@
+<span data-toggle="tooltip" data-placement="top" title="" data-original-title="<?= $msg ?>"><i class="fa fa-fw fa-question-circle"></i></span>

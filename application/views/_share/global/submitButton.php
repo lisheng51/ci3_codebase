@@ -1,0 +1,1 @@
+<button class="<?= empty($rsdb) === false ? 'btn btn-dark' : 'btn btn-dark' ?>" type="submit"><?= $text ?></button>

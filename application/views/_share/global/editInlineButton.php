@@ -1,0 +1,1 @@
+<span class="inline_edit" data-field="<?= $field ?>" data-edit-id="<?= $editId ?>"><?= $text; ?></span>
