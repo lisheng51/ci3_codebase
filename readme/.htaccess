@@ -1,0 +1,30 @@
+RewriteEngine On
+
+<Files domain.json>
+        order allow,deny
+        deny from all
+</Files>
+
+<Files composer.json>
+        order allow,deny
+        deny from all
+</Files>
+
+<Files composer.lock>
+        order allow,deny
+        deny from all
+</Files>
+
+<Files package-lock.json>
+        order allow,deny
+        deny from all
+</Files>
+
+<Files package.json>
+        order allow,deny
+        deny from all
+</Files>
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?/$1 [L,PT]

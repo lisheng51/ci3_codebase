@@ -1,0 +1,1 @@
+<a href="<?= $url ?>" class="btn btn-dark btn-sm <?= $disabled ?>"><?= $text ?></a>

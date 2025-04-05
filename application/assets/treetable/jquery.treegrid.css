@@ -1,0 +1,55 @@
+.treegrid-indent {width:16px; height: 16px; display: inline-block; position: relative;}
+
+.treegrid-expander {width:16px; height: 16px; display: inline-block; position: relative; cursor: pointer;}
+
+.treegrid-expander-expanded{background-image: url(../img/collapse.png); }
+.treegrid-expander-collapsed{background-image: url(../img/expand.png);}
+
+table.tree {
+    margin-bottom: 0px;  
+}
+
+.header-fixed > thead,
+.header-fixed > tbody,
+.header-fixed > thead > tr,
+.header-fixed > tbody > tr,
+.header-fixed > thead > tr > th,
+.header-fixed > tbody > tr > td {
+    display: block;
+}
+
+.header-fixed > tbody > tr:after,
+.header-fixed > thead > tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+.header-fixed > tbody {
+    overflow-y: auto;
+    height: 600px;
+}
+
+.header-fixed > tbody > tr > td,
+.header-fixed > thead > tr > th {
+    width: 20%;
+    float: left;
+}
+
+.form-check label.is_blue::before{
+    background-color: #337ab7;
+}
+
+.form-check label.is_green::before{
+    background-color: #5cb85c;
+}
+
+.form-check label.is_info::before{
+    background-color: #5bc0de;
+}
+
+.form-check input[type="checkbox"]:checked + label[class^="is_"]::after,
+.form-check input[type="radio"]:checked + label[class^="is_"]::after {
+    color: white;
+}
