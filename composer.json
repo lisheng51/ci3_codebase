@@ -1,6 +1,6 @@
 {
   "name": "lisheng51/ci3_codebase",
-  "description": "CodeIgniter 3 高级项目骨架，集成 HMVC、模块化、Docker 等",
+  "description": "CI 3 HMVC",
   "type": "project",
   "license": "MIT",
   "require": {},
