@@ -1,9 +1,9 @@
 {
-  "name": "lisheng51/ci3_codebase",
-  "description": "CI 3 HMVC",
-  "type": "project",
-  "license": "MIT",
-  "require": {},
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "require": {
+        "picqer/php-barcode-generator": "^3.3",
+        "chillerlan/php-qrcode": "^6.0",
+        "phpmailer/phpmailer": "^7.1",
+        "guzzlehttp/guzzle": "^8.3",
+        "mpdf/mpdf": "^8.3"
+    }
 }

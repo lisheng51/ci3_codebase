@@ -1,0 +1,1 @@
+<input type="text" id="_core_access_code" name="_core_access_code" required placeholder="<?= lang('access_code_label_text') ?>" class="form-control form-control-user">

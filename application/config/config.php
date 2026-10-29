@@ -8,7 +8,7 @@ $config['language'] = '';
 $config['charset'] = 'UTF-8';
 $config['enable_hooks'] = true;
 $config['subclass_prefix'] = 'MY_';
-$config['composer_autoload'] = false;
+$config['composer_autoload'] = FCPATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 /*
   |--------------------------------------------------------------------------
