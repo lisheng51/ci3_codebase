@@ -18,6 +18,8 @@ class Auth extends Site_Controller
         $data["title"] = CasinoLang::t('login_title');
         $data["clientId"] = CasinoUserModel::clientId();
         $data["googleUrl"] = site_url($this->module_path_name . '/auth/google');
+        $data["cardLogin"] = CasinoConfigModel::bool('casino_card_login');
+        $data["cardUrl"] = site_url($this->module_path_name . '/auth/card');
         $data["blocked"] = CIInput()->get('blocked') === '1';
         // a webmaster logged in to the back office can come in without Google
         $back = CasinoUserModel::backOfficeWebmaster();
@@ -42,6 +44,25 @@ class Auth extends Site_Controller
         if ($userId <= 0) {
             $json["status"] = "error";
             $json["msg"] = $userId < 0 ? CasinoLang::t('login_blocked') : CasinoLang::t('login_failed');
+            exit(json_encode($json));
+        }
+
+        $json["status"] = "good";
+        $json["redirect"] = site_url($this->module_path_name . '/home');
+        exit(json_encode($json));
+    }
+
+    /** Login with a scanned (or typed) Holland Casino membership card number. */
+    public function card()
+    {
+        $userId = CasinoUserModel::loginWithCard((string)(CIInput()->post('card') ?? ''));
+        if ($userId <= 0) {
+            $json["status"] = "error";
+            $json["msg"] = match ($userId) {
+                -1 => CasinoLang::t('login_blocked'),
+                -2 => CasinoLang::t('card_too_many'),
+                default => CasinoLang::t('card_invalid'),
+            };
             exit(json_encode($json));
         }
 
