@@ -10,7 +10,7 @@ class Register extends Site_Controller
         if (!AccessCheckModel::ipAllow()) {
             showError();
         }
-        if ($this->input->post()) {
+        if (CIInput()->post()) {
             $this->add_action();
         }
 
@@ -20,13 +20,13 @@ class Register extends Site_Controller
 
         $data["title"] = "Welkom bij registreren";
         $data["h4"] = "Registreren";
-        $data["emailaddress"] = $this->input->get("emailaddress");
+        $data["emailaddress"] = CIInput()->get("emailaddress");
         $this->view_layout("index", $data);
     }
 
     public function active()
     {
-        $key = rawurldecode($this->input->get('hashkey'));
+        $key = rawurldecode(CIInput()->get('hashkey'));
         $arr_keys = explode("#_#", $this->encryption->decrypt($key));
         if (empty($arr_keys[0]) === true) {
             showError();
@@ -48,7 +48,7 @@ class Register extends Site_Controller
 
     private function get_postdata()
     {
-        $arr_input = $this->input->post('user');
+        $arr_input = CIInput()->post('user');
         $data["emailaddress"] = strtolower($arr_input["username"]);
         $data["permission_group_ids"] = 2;
         AjaxckModel::value('email', $data["emailaddress"]);
@@ -63,7 +63,7 @@ class Register extends Site_Controller
         SendMailModel::userActive($arr_user);
         $json["msg"] = "Bedankt voor het aanmelden, een activatiemail is naar uw mail gestuurd!";
         $json["status"] = "good";
-        $this->session->set_tempdata($this->tem_key, $this->input->ip_address());
+        $this->session->set_tempdata($this->tem_key, CIInput()->ip_address());
         exit(json_encode($json));
     }
 

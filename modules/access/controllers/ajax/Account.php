@@ -11,9 +11,9 @@ class Account extends Ajax_Controller
             exit(json_encode($json));
         }
 
-        $domain = $this->input->post('domain');
-        $userId = $this->input->post('userId');
-        $username = $this->input->post('username');
+        $domain = CIInput()->post('domain');
+        $userId = CIInput()->post('userId');
+        $username = CIInput()->post('username');
 
         $val = explode(DIRECTORY_SEPARATOR, dirname(__FILE__), -5);
         $base_url = 'http://' . $domain . '/' . end($val) . '/';

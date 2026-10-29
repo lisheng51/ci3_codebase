@@ -6,7 +6,7 @@ class Login extends Site_Controller
 
     public function direct()
     {
-        $key = rawurldecode($this->input->get('hashkey'));
+        $key = rawurldecode(CIInput()->get('hashkey'));
         $arr_keys = explode("#_#", $this->encryption->decrypt($key));
         if (empty($arr_keys[0]) === true) {
             showError();
@@ -36,7 +36,7 @@ class Login extends Site_Controller
 
     public function directEasy()
     {
-        $key = rawurldecode($this->input->get('key'));
+        $key = rawurldecode(CIInput()->get('key'));
         $arrTokenValue = json_decode($this->encryption->decrypt($key), true);
         $userId = $arrTokenValue[UserModel::$primaryKey];
         if ($userId <= 0) {
@@ -62,7 +62,7 @@ class Login extends Site_Controller
 
     public function active()
     {
-        $key = rawurldecode($this->input->get('hashkey'));
+        $key = rawurldecode(CIInput()->get('hashkey'));
         $arr_keys = explode("#_#", $this->encryption->decrypt($key));
         if (empty($arr_keys[0]) === true) {
             showError();
@@ -88,7 +88,7 @@ class Login extends Site_Controller
         if (!AccessCheckModel::ipAllow()) {
             showError();
         }
-        if ($this->input->post()) {
+        if (CIInput()->post()) {
             $this->index_dev_action();
         }
 
@@ -104,7 +104,7 @@ class Login extends Site_Controller
 
     private function index_dev_action()
     {
-        $user_id = $this->input->post(UserModel::$primaryKey) ?? 0;
+        $user_id = CIInput()->post(UserModel::$primaryKey) ?? 0;
         UserModel::joinLogin();
         $arr_user = UserModel::getOneById($user_id);
         if (empty($arr_user)) {
@@ -131,7 +131,7 @@ class Login extends Site_Controller
     public function index()
     {
         $apiId = 0;
-        $code = $this->input->get('code') ?? null;
+        $code = CIInput()->get('code') ?? null;
         if ($code !== null) {
             $apiId = $this->encryption->decrypt(rawurldecode($code));
             if ($apiId > 0 && LoginModel::userId() > 0) {
@@ -145,14 +145,14 @@ class Login extends Site_Controller
                 $valuestring = json_encode($data);
                 $tokenString = $this->encryption->encrypt($valuestring);
                 $token = rawurlencode($tokenString);
-                $getRedirectUrl = $this->input->get('redirectUrl') ?? current_url();
+                $getRedirectUrl = CIInput()->get('redirectUrl') ?? current_url();
                 $redirect_url = $getRedirectUrl . '?token=' . $token;
                 redirect($redirect_url);
             }
         }
 
 
-        if ($this->input->post()) {
+        if (CIInput()->post()) {
             $this->indexAction($apiId);
         }
 
@@ -166,7 +166,7 @@ class Login extends Site_Controller
     private function sendAccessCode($arr_user = [], $password = null)
     {
 
-        $_core_access_code = $this->input->post('_core_access_code') ?? "";
+        $_core_access_code = CIInput()->post('_core_access_code') ?? "";
         if (empty($_core_access_code) && $arr_user["with_access_code"] > 0) {
             SendMailModel::accessCodeLogin($arr_user, $password);
             $json["msg"] = lang("access_code_send_text");
@@ -184,7 +184,7 @@ class Login extends Site_Controller
 
     private function send2faCode(array $arr_user = [])
     {
-        $verifyCode = $this->input->post('_core_one_code') ?? "";
+        $verifyCode = CIInput()->post('_core_one_code') ?? "";
         if ($arr_user["with_2fa"] > 0 && !empty($arr_user["phone"]) && empty($arr_user["2fa_secret"])) {
             $hashKey = $this->session->tempdata($this->tem_key);
             if (empty($hashKey)) {
@@ -275,7 +275,7 @@ class Login extends Site_Controller
             $valuestring = json_encode($data);
             $tokenString = $this->encryption->encrypt($valuestring);
             $token = rawurlencode($tokenString);
-            $getRedirectUrl = $this->input->get('redirectUrl') ?? current_url();
+            $getRedirectUrl = CIInput()->get('redirectUrl') ?? current_url();
             $redirectUrl = $getRedirectUrl . '?token=' . $token;
             $json["redirect_url"] = $redirectUrl;
         }

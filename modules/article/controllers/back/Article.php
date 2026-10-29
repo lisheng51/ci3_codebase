@@ -8,7 +8,7 @@ class Article extends Back_Controller
     //#[PermissionAttribute('asdfasdf.asdfasf.asdfasf')]
     public function add()
     {
-        if ($this->input->post()) {
+        if (CIInput()->post()) {
             $this->addAction();
         }
         $data["rsdb"] = null;
@@ -21,7 +21,7 @@ class Article extends Back_Controller
 
     public function del()
     {
-        $id = $this->input->post("del_id");
+        $id = CIInput()->post("del_id");
         $rsdb = ArticleModel::getOneById($id);
         if (empty($rsdb)) {
             $json["msg"] = $this->title_module . " is niet gevonden!";
@@ -45,7 +45,7 @@ class Article extends Back_Controller
             redirect($this->controller_url);
         }
 
-        if ($this->input->post()) {
+        if (CIInput()->post()) {
             $this->editAction($rsdb);
         }
 
@@ -78,7 +78,7 @@ class Article extends Back_Controller
         $data["pagination"] = GlobalModel::showPage($total);
 
         $data["result"] = $this->view_layout_return("ajax_list", $data);
-        if ($this->input->post()) {
+        if (CIInput()->post()) {
             $json["result"] = $data["result"];
             exit(json_encode($json));
         }
@@ -159,7 +159,7 @@ class Article extends Back_Controller
 
     private function getPostdata()
     {
-        if ($this->input->post("del_id")) {
+        if (CIInput()->post("del_id")) {
             $this->del();
         }
         $data = ArticleModel::getPostdata();

@@ -6,8 +6,8 @@ class Home extends Site_Controller
 
     public function index()
     {
-        $cateId = (int)$this->input->get(ArticleCateModel::$primaryKey);
-        $keyword = trim((string)$this->input->get('q'));
+        $cateId = (int)CIInput()->get(ArticleCateModel::$primaryKey);
+        $keyword = trim((string)CIInput()->get('q'));
 
         ArticleModel::sqlReset();
         ArticleModel::joinArticleCate();

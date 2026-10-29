@@ -7,7 +7,7 @@ class Password_reset extends Site_Controller
 
     public function index()
     {
-        if ($this->input->post()) {
+        if (CIInput()->post()) {
             $this->index_action();
         }
 
@@ -23,7 +23,7 @@ class Password_reset extends Site_Controller
     {
         AjaxckModel::toMuchSendMail($this->tem_key);
         AjaxckModel::failcheck(FailCheckTypeModel::PasswordReset);
-        $arr_input = $this->input->post('user');
+        $arr_input = CIInput()->post('user');
         $emailaddress = $arr_input["username"];
         $json = [];
 
@@ -47,17 +47,17 @@ class Password_reset extends Site_Controller
         FailCheckModel::reset(FailCheckTypeModel::PasswordReset);
         $json["msg"] = "Er is een herstelmail naar uw mailbox gestuurd";
         $json["status"] = "good";
-        $this->session->set_tempdata($this->tem_key, $this->input->ip_address());
+        $this->session->set_tempdata($this->tem_key, CIInput()->ip_address());
         exit(json_encode($json));
     }
 
     public function reset()
     {
-        if ($this->input->post()) {
+        if (CIInput()->post()) {
             $this->reset_action();
         }
 
-        $hashkey = rawurldecode($this->input->get('hashkey'));
+        $hashkey = rawurldecode(CIInput()->get('hashkey'));
 
         $arr_keys_check = explode("#_#", $this->encryption->decrypt($hashkey));
         if (empty($arr_keys_check[0]) === true) {
@@ -80,9 +80,9 @@ class Password_reset extends Site_Controller
 
     private function reset_action()
     {
-        $password1 = $this->input->post('password1');
-        $password2 = $this->input->post('password2');
-        $hashkey = rawurldecode($this->input->get('hashkey'));
+        $password1 = CIInput()->post('password1');
+        $password2 = CIInput()->post('password2');
+        $hashkey = rawurldecode(CIInput()->get('hashkey'));
         $json = [];
 
         $arr_keys_check = explode("#_#", $this->encryption->decrypt($hashkey));
