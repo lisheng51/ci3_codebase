@@ -5,7 +5,7 @@ class Home extends MX_Controller
 
     public function index()
     {
-        $module = CIRouter()->module;
-        redirect($module . '/' . AccessCheckModel::$backPath . '/' . $module);
+        $module = $this->router->module;
+        redirect($module . '/site');
     }
 }
