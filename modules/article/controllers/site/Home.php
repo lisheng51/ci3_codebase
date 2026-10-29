@@ -1,6 +1,6 @@
 <?php
 
-class Article extends Site_Controller
+class Home extends Site_Controller
 {
     protected $title_module = 'Artikelen';
 
