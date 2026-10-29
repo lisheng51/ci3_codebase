@@ -234,6 +234,8 @@ function ajax_inline_edit(ajaxurl, showBox = true, inputsize = 25) {
 }
 
 function ajax_sort(ajaxurl) {
+    // voorkomt dat de browser de pagina scrolt als je de handle op een touchscreen vastpakt
+    $('tbody#itemContainer button#start_ajax_sort').css('touch-action', 'none');
     $('tbody#itemContainer').sortable({
         opacity: 0.6,
         revert: true,
@@ -1057,3 +1059,86 @@ function HrefPermissionCk(select) {
     });
 
 }
+// jQuery UI (sortable/draggable) luistert alleen naar muis-events; vertaal touch naar muis
+// zodat slepen ook op telefoon/tablet werkt (zelfde aanpak als jQuery UI Touch Punch).
+(function ($) {
+    if (!('ontouchstart' in window) || !$.ui || !$.ui.mouse) {
+        return;
+    }
+
+    let touchHandled = false;
+    let touchMoved = false;
+
+    function simulateMouseEvent(event, type) {
+        if (event.originalEvent.touches.length > 1) {
+            return;
+        }
+        event.preventDefault();
+        let touch = event.originalEvent.changedTouches[0];
+        touch.target.dispatchEvent(new MouseEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            detail: 1,
+            screenX: touch.screenX,
+            screenY: touch.screenY,
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            button: 0
+        }));
+    }
+
+    let mouseProto = $.ui.mouse.prototype;
+    let _mouseInit = mouseProto._mouseInit;
+    let _mouseDestroy = mouseProto._mouseDestroy;
+
+    mouseProto._touchStart = function (event) {
+        // alleen overnemen als de widget dit element accepteert (bv. de sorteer-handle), anders blijft scrollen werken
+        if (touchHandled || !this._mouseCapture(event.originalEvent.changedTouches[0])) {
+            return;
+        }
+        touchHandled = true;
+        touchMoved = false;
+        simulateMouseEvent(event, 'mouseover');
+        simulateMouseEvent(event, 'mousemove');
+        simulateMouseEvent(event, 'mousedown');
+    };
+
+    mouseProto._touchMove = function (event) {
+        if (!touchHandled) {
+            return;
+        }
+        touchMoved = true;
+        simulateMouseEvent(event, 'mousemove');
+    };
+
+    mouseProto._touchEnd = function (event) {
+        if (!touchHandled) {
+            return;
+        }
+        simulateMouseEvent(event, 'mouseup');
+        simulateMouseEvent(event, 'mouseout');
+        if (!touchMoved) {
+            simulateMouseEvent(event, 'click');
+        }
+        touchHandled = false;
+    };
+
+    mouseProto._mouseInit = function () {
+        this.element.on({
+            touchstart: $.proxy(this, '_touchStart'),
+            touchmove: $.proxy(this, '_touchMove'),
+            touchend: $.proxy(this, '_touchEnd')
+        });
+        _mouseInit.call(this);
+    };
+
+    mouseProto._mouseDestroy = function () {
+        this.element.off({
+            touchstart: $.proxy(this, '_touchStart'),
+            touchmove: $.proxy(this, '_touchMove'),
+            touchend: $.proxy(this, '_touchEnd')
+        });
+        _mouseDestroy.call(this);
+    };
+})(jQuery);
