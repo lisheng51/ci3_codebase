@@ -4,19 +4,19 @@
         <form method="POST" id="send">
             <div class="row">
 
-                <div class="col-2">
+                <div class="col-12 col-sm-6 col-lg-2">
                     <label>Categorie*</label>
                     <div class="mb-3">
                         <?php echo ArticleCateModel::select($rsdb["cate_id"] ?? 0); ?>
                     </div>
                 </div>
-                <div class="col-2">
+                <div class="col-12 col-sm-6 col-lg-2">
                     <label>Datum*</label>
                     <div class="mb-3">
                         <input type="text" class="form-control" name="created_at" maxlength="19" value="<?php echo $created_at; ?>" />
                     </div>
                 </div>
-                <div class="col-8">
+                <div class="col-12 col-lg-8">
                     <label>Titel*</label>
                     <div class="mb-3">
                         <input type="text" class="form-control" name="title" required maxlength="80" value="<?php echo $rsdb["title"] ?? ""; ?>" />
@@ -36,7 +36,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <div class="mb-3">
+                    <div class="mb-3 d-flex flex-wrap gap-2">
                         <?php echo add_csrf_value(); ?>
                         <?php echo add_submit_button($rsdb) ?>
                         <?php echo add_reset_button() ?>
@@ -50,7 +50,7 @@
 </div>
 
 <script>
-    setup_tinymce_noxss_clean();
+    setup_tinymce_noxss_clean('.tinymce_noxss_clean', window.innerWidth < 768 ? 400 : 600);
     $("form#send").submit(function(e) {
         tinyMCE.triggerSave();
         e.preventDefault();

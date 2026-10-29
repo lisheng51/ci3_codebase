@@ -3,13 +3,13 @@
     <div class="card-body">
         <form method="POST" id="send">
             <div class="row">
-                <div class="col-4">
+                <div class="col-12 col-md-4">
                     <div class="mb-3">
                         <label>Naam*</label>
-                        <input type="text" class="form-control" maxlength="50" ax placeholder="Naam" name="name" required value="<?php echo $rsdb["name"] ?? ""; ?>" />
+                        <input type="text" class="form-control" maxlength="50" placeholder="Naam" name="name" required value="<?php echo $rsdb["name"] ?? ""; ?>" />
                     </div>
                 </div>
-                <div class="col-8">
+                <div class="col-12 col-md-8">
                     <div class="mb-3">
                         <label>Omschrijving</label>
                         <textarea class="form-control" maxlength="200" rows="4" name="description"><?php echo $rsdb["description"] ?? ""; ?></textarea>
@@ -18,7 +18,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <div class="mb-3">
+                    <div class="mb-3 d-flex flex-wrap gap-2">
                         <?php echo add_csrf_value(); ?>
                         <?php echo add_submit_button($rsdb) ?>
                         <?php echo add_reset_button() ?>

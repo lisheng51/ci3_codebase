@@ -2,20 +2,23 @@
     <h5 class="card-header">Resultaten - Totaal gevonden: <span class="totalcount"><?php echo $total ?></span></h5>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-hover align-middle mb-0">
                 <thead>
                     <tr>
                         <th>Naam</th>
-                        <th>Beschrijving</th>
-                        <th></th>
+                        <th class="d-none d-md-table-cell">Beschrijving</th>
+                        <th class="text-end"></th>
                     </tr>
                 </thead>
                 <tbody id="itemContainer">
                     <?php foreach ($listdb as $value) : ?>
                         <tr>
-                            <td><?php echo $value["name"]; ?></td>
-                            <td><?php echo $value["description"]; ?></td>
                             <td>
+                                <?php echo $value["name"]; ?>
+                                <div class="small text-muted d-md-none"><?php echo $value["description"]; ?></div>
+                            </td>
+                            <td class="d-none d-md-table-cell"><?php echo $value["description"]; ?></td>
+                            <td class="text-end text-nowrap">
                                 <a href="<?php echo $value["edit_url"] ?>" class="btn btn-info btn-sm"><?php echo lang("edit_icon") ?></a>
                             </td>
                         </tr>
