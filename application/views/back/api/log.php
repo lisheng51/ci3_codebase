@@ -3,37 +3,37 @@
     <div class="card-body">
         <form method="POST" id="form_search">
             <div class="row">
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectSelectMulti('API naam', 'api_id', ApiModel::selectMultiple(loadPostGet('api_id', 'array')), loadPostGet('api_id_operator')) ?>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectInput('IP', 'ip_address', loadPostGet('ip_address'), loadPostGet('ip_address_operator')) ?>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectInput('POST', 'post_value', loadPostGet('post_value'), loadPostGet('post_value_operator')) ?>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectInput('GET', 'get_value', loadPostGet('get_value'), loadPostGet('get_value_operator')) ?>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectInput('Header', 'header_value', loadPostGet('header_value'), loadPostGet('header_value_operator')) ?>
                 </div>
-                <!--                <div class="col-3">
+                <!--                <div class="col-12 col-lg-3">
                     <div class="mb-3">
                         <label>Datum</label>
                         <input type="text" name="reportrange" class="form-control" />
                     </div> 
                 </div>-->
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectInput('Path/url', 'path', loadPostGet('path'), loadPostGet('path_operator')) ?>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <div class="mb-3">
                         <label>Datum&tijd begin</label>
                         <input type="text" name="reportrange_start" class="form-control" value="<?= loadPostGet('reportrange_start') ?>" />
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <div class="mb-3">
                         <label>Datum&tijd eind</label>
                         <input type="text" name="reportrange_end" class="form-control" value="<?= loadPostGet('reportrange_end') ?>" />
@@ -51,10 +51,10 @@
     </div>
     <div class="card-footer">
         <div class="row">
-            <div class="col-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_order_by(ApiLogModel::$selectOrderBy); ?>
             </div>
-            <div class="col-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_page_limit() ?>
             </div>
         </div>

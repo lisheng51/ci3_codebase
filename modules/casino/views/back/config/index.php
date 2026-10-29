@@ -13,7 +13,7 @@
                     <div id="cfg<?= $tab ?>" class="tab-pane <?= $tab === 0 ? 'active' : '' ?>">
                         <div class="row">
                             <?php foreach ($fields as $key => $label) : ?>
-                                <div class="<?= in_array($key, ['casino_dice_payout_totals', 'casino_google_client_id', 'casino_slot_paytable'], true) ? 'col-12' : 'col-6' ?>">
+                                <div class="<?= in_array($key, ['casino_dice_payout_totals', 'casino_google_client_id', 'casino_slot_paytable'], true) ? 'col-12' : 'col-12 col-lg-6' ?>">
                                     <div class="mb-3">
                                         <label><?= htmlspecialchars($label) ?></label>
                                         <input type="text" class="form-control" name="<?= $key ?>" value="<?= htmlspecialchars($values[$key]) ?>" placeholder="<?= htmlspecialchars(CasinoConfigModel::DEFAULTS[$key]) ?>">
@@ -52,7 +52,7 @@
             </div>
             <div class="row mt-3">
                 <div class="col-12">
-                    <div class="mb-3">
+                    <div class="mb-3 d-flex flex-wrap gap-2">
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button('config') ?>
                     </div>

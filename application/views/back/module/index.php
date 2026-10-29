@@ -3,10 +3,10 @@
     <div class="card-body">
         <form method="POST" id="form_search">
             <div class="row">
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectInput('Naam', 'path_description') ?>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <label>Is actief</label>
                     <div class="mb-3">
                         <?= select_boolean("is_active", 2, true) ?>
@@ -24,7 +24,7 @@
     </div>
     <div class="card-footer">
         <div class="row">
-            <div class="col-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_order_by(ModuleModel::$selectOrderBy, 'sort_list#asc'); ?>
             </div>
         </div>

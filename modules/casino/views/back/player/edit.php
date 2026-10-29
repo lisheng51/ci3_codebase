@@ -31,19 +31,19 @@
 
         <form id="send">
             <div class="row">
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <label>Fiches bij (+) of af (-)</label>
                     <div class="mb-3">
                         <input name="delta" type="number" class="form-control" value="0" />
                     </div>
                 </div>
-                <div class="col-6">
+                <div class="col-12 col-lg-6">
                     <label>Reden (verplicht bij wijziging, komt in de log)</label>
                     <div class="mb-3">
                         <input name="reason" type="text" maxlength="255" class="form-control" />
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <label>Actief</label>
                     <div class="mb-3">
                         <select name="is_active" class="form-select">

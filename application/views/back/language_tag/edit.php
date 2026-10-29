@@ -3,14 +3,14 @@
     <div class="card-body">
         <form id="send">
             <div class="row">
-                <div class="col-10">
+                <div class="col-12 col-lg-10">
                     <div class="mb-3">
                         <label>Tag*</label>
                         <input type="text" maxlength="100" class="form-control" name="tag" required value="<?= $rsdb["tag"] ?? ""; ?>" />
                     </div>
                 </div>
 
-                <div class="col-2">
+                <div class="col-12 col-lg-2">
                     <label>Taal*</label>
                     <div class="mb-3">
                         <?= LanguageModel::select($rsdb[LanguageModel::$primaryKey] ?? 1); ?>

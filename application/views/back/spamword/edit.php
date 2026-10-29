@@ -3,7 +3,7 @@
     <div class="card-body">
         <form method="POST" id="send">
             <div class="row">
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <div class="mb-3">
                         <label>Woord*</label>
                         <input type="text" class="form-control" name="word" required value="<?= $rsdb["word"] ?? ""; ?>" />

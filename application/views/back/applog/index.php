@@ -29,10 +29,10 @@
             </div>
             <div class="card-footer">
                 <div class="row">
-                    <div class="col-md-2">
+                    <div class="col-6 col-md-3 col-lg-2">
                         <?= select_order_by(AppLogModel::$selectOrderBy); ?>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-6 col-md-3 col-lg-2">
                         <?= select_page_limit() ?>
                     </div>
                 </div>

@@ -3,7 +3,7 @@
     <div class="card-body">
         <form id="form_search">
             <div class="row">
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <label>Datum</label>
                     <div class="mb-3">
                         <input type="text" name="reportrange" class="form-control" />
@@ -21,7 +21,7 @@
     </div>
     <div class="card-footer">
         <div class="row">
-            <div class="col-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_page_limit() ?>
             </div>
         </div>

@@ -3,13 +3,13 @@
     <div class="card-body">
         <form id="send">
             <div class="row">
-                <div class="col-8">
+                <div class="col-12 col-lg-8">
                     <label>Naam*</label>
                     <div class="mb-3">
                         <input type="text" class="form-control" maxlength="50" name="name" required value="<?= $rsdb["name"] ?? ""; ?>" />
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-12 col-lg-4">
                     <label>Type*</label>
                     <div class="mb-3">
                         <?= PermissionGroupTypeModel::select($rsdb[PermissionGroupTypeModel::$primaryKey] ?? 1); ?>

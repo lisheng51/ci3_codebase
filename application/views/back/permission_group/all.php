@@ -3,36 +3,38 @@
 
 <div class="row">
     <div class="col-12">
-        <table class="table table-hover tree">
-            <thead>
-                <tr>
-                    <th></th>
-                    <?php foreach ($listdbGroup as $item) : ?>
-                        <th><?= $item["name"] ?></th>
-                    <?php endforeach; ?>
-                </tr>
-            </thead>
-            <tbody id="itemContainer">
-                <?php foreach ($listdb as $value) : ?>
-
-                    <tr class="treegrid-<?= $value[PermissionModel::$primaryKey] ?>">
-                        <td>[<?= $value["path_description"] ?>] <?= $value["description"] ?></td>
-                        <?php foreach ($value['allids'] as $gid) :
-                            $uniqueForId = 'label_pidgid_' . $value[PermissionModel::$primaryKey] . '_' . $gid;
-                            $ischecked = in_array($gid, $value['gids']) ? "checked" : "";
-                        ?>
-                            <td>
-                                <div class="form-check">
-                                    <input class="form-check-input actionpermissionset" data-permissionid="<?= $value[PermissionModel::$primaryKey] ?>" data-groupid="<?= $gid ?>" type="checkbox" <?= $ischecked ?> id="<?= $uniqueForId ?>">
-                                    <label class="form-check-label" for="<?= $uniqueForId ?>"></label>
-                                </div>
-                            </td>
+        <div class="table-responsive">
+            <table class="table table-hover tree">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <?php foreach ($listdbGroup as $item) : ?>
+                            <th><?= $item["name"] ?></th>
                         <?php endforeach; ?>
                     </tr>
-                    <?= $value["show_child"]; ?>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody id="itemContainer">
+                    <?php foreach ($listdb as $value) : ?>
+    
+                        <tr class="treegrid-<?= $value[PermissionModel::$primaryKey] ?>">
+                            <td>[<?= $value["path_description"] ?>] <?= $value["description"] ?></td>
+                            <?php foreach ($value['allids'] as $gid) :
+                                $uniqueForId = 'label_pidgid_' . $value[PermissionModel::$primaryKey] . '_' . $gid;
+                                $ischecked = in_array($gid, $value['gids']) ? "checked" : "";
+                            ?>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input actionpermissionset" data-permissionid="<?= $value[PermissionModel::$primaryKey] ?>" data-groupid="<?= $gid ?>" type="checkbox" <?= $ischecked ?> id="<?= $uniqueForId ?>">
+                                        <label class="form-check-label" for="<?= $uniqueForId ?>"></label>
+                                    </div>
+                                </td>
+                            <?php endforeach; ?>
+                        </tr>
+                        <?= $value["show_child"]; ?>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

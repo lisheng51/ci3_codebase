@@ -1,19 +1,19 @@
 <div class="card">
-    <div class="card-header"><?= lang('search_box_header_text') ?><div class="float-end"><?= $addButton ?></div>
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2"><?= lang('search_box_header_text') ?><div class="flex-shrink-0"><?= $addButton ?></div>
     </div>
     <div class="card-body">
         <form method="POST" id="form_search">
             <div class="row">
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectInput('Onderwerp', 'title') ?>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <div class="mb-3">
                         <label>Datum</label>
                         <input type="text" name="reportrange" class="form-control" />
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <div class="mb-3">
                         <label>Status</label>
                         <?= $select_open_status ?>
@@ -31,10 +31,10 @@
     </div>
     <div class="card-footer">
         <div class="row">
-            <div class="col-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_order_by(MessageModel::$selectOrderBy); ?>
             </div>
-            <div class="col-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_page_limit() ?>
             </div>
         </div>

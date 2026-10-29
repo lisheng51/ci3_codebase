@@ -17,7 +17,7 @@
                 </div>
 
                 <div class="col-md-12">
-                    <div class="mb-3">
+                    <div class="mb-3 d-flex flex-wrap gap-2">
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button() ?>
                     </div>

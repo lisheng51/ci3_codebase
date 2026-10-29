@@ -3,20 +3,20 @@
     <div class="card-body">
         <form method="POST" id="send">
             <div class="row">
-                <div class="col-4">
+                <div class="col-12 col-lg-4">
                     <div class="mb-3">
                         <label>Naam</label>
                         <input type="text" class="form-control" maxlength="200" name="path_description" value="<?= $rsdb["path_description"]; ?>" />
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <div class="mb-3">
                         <label>Path*</label>
                         <input type="text" class="form-control" maxlength="50" name="path" readonly value="<?= $rsdb["path"]; ?>" />
                     </div>
                 </div>
 
-                <div class="col-2">
+                <div class="col-12 col-lg-2">
                     <div class="mb-3">
                         <label>Is actief</label>
                         <?= select_boolean('is_active', intval($rsdb["is_active"] ?? 0)); ?>

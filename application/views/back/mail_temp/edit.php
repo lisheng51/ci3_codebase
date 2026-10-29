@@ -3,21 +3,21 @@
     <div class="card-body">
         <form id="send">
             <div class="row">
-                <div class="col-6">
+                <div class="col-12 col-lg-6">
                     <div class="mb-3">
                         <label>Onderwerp*</label>
                         <input type="text" maxlength="100" class="form-control" name="subject" required value="<?= $rsdb["subject"] ?? ""; ?>" />
                     </div>
                 </div>
 
-                <div class="col-4">
+                <div class="col-12 col-lg-4">
                     <div class="mb-3">
                         <label>Trigger*</label>
                         <input type="text" maxlength="50" class="form-control" name="trigger_name" required value="<?= $rsdb["trigger_name"] ?? ""; ?>" />
                     </div>
                 </div>
 
-                <div class="col-2">
+                <div class="col-12 col-lg-2">
                     <label>Taal*</label>
                     <div class="mb-3">
                         <?= LanguageModel::select($rsdb[LanguageModel::$primaryKey] ?? 1); ?>

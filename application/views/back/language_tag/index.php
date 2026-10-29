@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-header"><?= lang('search_box_header_text') ?><div class="float-end">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2"><?= lang('search_box_header_text') ?><div class="flex-shrink-0">
             <a href="<?= site_url($path_name . '/language_tag/sync') ?>" class="btn btn-dark btn-sm">Synchroniseren</a>
             <a href="<?= site_url($path_name . '/language_tag/add') ?>" class="btn btn-success btn-sm"><?= lang('add_icon') ?></a>
             <a href="<?= site_url($path_name . '/language_tag/add?mode=tinymce') ?>" class="btn btn-success btn-sm"><i class="fa-fw fa-regular fa-square-plus"></i></a>
@@ -8,10 +8,10 @@
     <div class="card-body">
         <form method="POST" id="form_search">
             <div class="row">
-                <div class="col-4">
+                <div class="col-12 col-lg-4">
                     <?= labelSelectInput('Tag', 'tag') ?>
                 </div>
-                <div class="col-2">
+                <div class="col-12 col-lg-2">
                     <?= labelSelectSelectMulti('Taal', LanguageModel::$primaryKey, LanguageModel::selectMultiple()) ?>
                 </div>
             </div>
@@ -29,10 +29,10 @@
     </div>
     <div class="card-footer">
         <div class="row">
-            <div class="col-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_order_by(LanguageTagModel::$selectOrderBy); ?>
             </div>
-            <div class="col-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_page_limit() ?>
             </div>
         </div>

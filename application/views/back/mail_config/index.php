@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-header"><?= $title ?> - <?= lang('search_box_header_text') ?><div class="float-end"><?= $addButton ?></div>
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2"><?= $title ?> - <?= lang('search_box_header_text') ?><div class="flex-shrink-0"><?= $addButton ?></div>
     </div>
     <div class="card-body">
         <form method="POST" id="form_search">
@@ -19,10 +19,10 @@
     </div>
     <div class="card-footer">
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_order_by(MailConfigModel::$selectOrderBy); ?>
             </div>
-            <div class="col-md-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_page_limit() ?>
             </div>
         </div>

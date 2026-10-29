@@ -19,7 +19,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <?php foreach ($data as $key => $value) : ?>
-                                    <div class="col-3">
+                                    <div class="col-12 col-lg-3">
                                         <label><?= $key ?></label>
                                         <div class="mb-3">
                                             <textarea class="form-control" rows="4" name="<?= $did . '[' . $key . ']' ?>"><?= stripslashes($value) ?></textarea>
@@ -37,7 +37,7 @@
     </div>
     <div class="row mt-3">
         <div class="col-12">
-            <div class="mb-3">
+            <div class="mb-3 d-flex flex-wrap gap-2">
                 <?= add_csrf_value(); ?>
                 <?= add_submit_button('config') ?>
             </div>

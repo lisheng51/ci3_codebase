@@ -37,7 +37,7 @@
     </div>
     <div class="row mt-3">
         <div class="col-12">
-            <div class="mb-3">
+            <div class="mb-3 d-flex flex-wrap gap-2">
                 <?= add_csrf_value(); ?>
                 <?= add_submit_button('mail_temp') ?>
             </div>

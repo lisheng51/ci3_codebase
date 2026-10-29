@@ -28,7 +28,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="mb-3 input-group show_form_input"></div>
-                    <div class="mb-3">
+                    <div class="mb-3 d-flex flex-wrap gap-2">
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button($rsdb) ?>
                         <?= add_reset_button() ?>

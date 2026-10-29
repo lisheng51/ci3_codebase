@@ -46,7 +46,7 @@
                                                             <div class="col-4 border-bottom">
                                                                 <?= $key . ": "; ?>
                                                             </div>
-                                                            <div class="col-8 border-bottom">
+                                                            <div class="col-8 border-bottom text-break">
                                                                 <?= $item; ?>
                                                             </div>
                                                         <?php endforeach; ?>
@@ -65,7 +65,7 @@
                                                             <div class="col-4 border-bottom">
                                                                 <?= $key . ": "; ?>
                                                             </div>
-                                                            <div class="col-8 border-bottom">
+                                                            <div class="col-8 border-bottom text-break">
                                                                 <?= $item; ?>
                                                             </div>
                                                         <?php endforeach; ?>
@@ -86,7 +86,7 @@
                                                             <div class="col-5 border-bottom">
                                                                 <?= $key . ": "; ?>
                                                             </div>
-                                                            <div class="col-7 border-bottom">
+                                                            <div class="col-7 border-bottom text-break">
                                                                 <?= $item; ?>
                                                             </div>
                                                         <?php endforeach; ?>
@@ -106,7 +106,7 @@
                                                             <div class="col-5 border-bottom">
                                                                 <?= $key . ": "; ?>
                                                             </div>
-                                                            <div class="col-7 border-bottom">
+                                                            <div class="col-7 border-bottom text-break">
                                                                 <?= json_encode($item); ?>
                                                             </div>
                                                         <?php endforeach; ?>

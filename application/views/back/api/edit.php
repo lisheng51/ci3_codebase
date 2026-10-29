@@ -3,20 +3,20 @@
     <div class="card-body">
         <form method="POST" id="send">
             <div class="row">
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <label>Naam*</label>
                     <div class="mb-3">
                         <input type="text" maxlength="100" class="form-control" name="name" required value="<?= $rsdb["name"] ?? "" ?>">
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <label>Key*</label>
                     <div class="mb-3">
 
                         <input type="text" maxlength="32" class="form-control" name="secret" required value="<?= $rsdb["secret"] ?? md5(time()) ?>">
                     </div>
                 </div>
-                <div class="col-2">
+                <div class="col-12 col-lg-2">
                     <label>Token life time(min)*</label>
                     <div class="mb-3">
                         <input type="number" min=15 max="1440" class="form-control" name="token_min" required value="<?= $rsdb["token_min"] ?? 30 ?>">

@@ -3,13 +3,13 @@
     <div class="card-body">
         <form id="send">
             <div class="row">
-                <div class="col-5">
+                <div class="col-12 col-lg-5">
                     <label>Naam*</label>
                     <div class="mb-3">
                         <input name="name" type="text" maxlength="100" required class="form-control" value="<?= htmlspecialchars($rsdb["name"] ?? "") ?>" />
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <label>Spel</label>
                     <div class="mb-3">
                         <select name="game" class="form-select" id="game">
@@ -22,13 +22,13 @@
                         <?php endif; ?>
                     </div>
                 </div>
-                <div class="col-2">
+                <div class="col-12 col-lg-2">
                     <label>Volgorde</label>
                     <div class="mb-3">
                         <input name="order_num" type="number" min="0" class="form-control" value="<?= (int)($rsdb["order_num"] ?? 0) ?>" />
                     </div>
                 </div>
-                <div class="col-2">
+                <div class="col-12 col-lg-2">
                     <label>Actief</label>
                     <div class="mb-3">
                         <select name="is_active" class="form-select">
@@ -39,25 +39,25 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <label id="min-label">Minimale inzet</label>
                     <div class="mb-3">
                         <input name="min_bet" type="number" min="1" required class="form-control" value="<?= (int)($rsdb["min_bet"] ?? 10) ?>" />
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <label id="max-label">Maximale inzet</label>
                     <div class="mb-3">
                         <input name="max_bet" type="number" min="1" required class="form-control" value="<?= (int)($rsdb["max_bet"] ?? 1000) ?>" />
                     </div>
                 </div>
-                <div class="col-3" id="seats-box">
+                <div class="col-12 col-lg-3" id="seats-box">
                     <label>Stoelen (max <?= CasinoTableModel::MAX_SEATS ?>, poker minimaal 2)</label>
                     <div class="mb-3">
                         <input name="max_seats" type="number" min="1" max="<?= CasinoTableModel::MAX_SEATS ?>" class="form-control" value="<?= (int)($rsdb["max_seats"] ?? 5) ?>" />
                     </div>
                 </div>
-                <div class="col-3" id="solo-box">
+                <div class="col-12 col-lg-3" id="solo-box">
                     <label>Solo</label>
                     <div class="mb-3">
                         <select name="solo" class="form-select">

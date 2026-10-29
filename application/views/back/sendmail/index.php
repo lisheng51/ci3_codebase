@@ -3,16 +3,16 @@
     <div class="card-body">
         <form method="POST" id="form_search">
             <div class="row">
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectInput('Onderwerp', 'subject') ?>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectSelectMulti('Van', 'from_email', MailConfigModel::selectMultiple([], 'from_email')) ?>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <?= labelSelectInput('Naar', 'to_email') ?>
                 </div>
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <div class="mb-3">
                         <label>Verzonden datum</label>
                         <input type="text" name="reportrange" class="form-control" />
@@ -30,10 +30,10 @@
     </div>
     <div class="card-footer">
         <div class="row">
-            <div class="col-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_order_by(SendMailModel::$selectOrderBy); ?>
             </div>
-            <div class="col-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <?= select_page_limit() ?>
             </div>
         </div>
