@@ -37,13 +37,7 @@ class F_datetime
         return $val;
     }
 
-    /**
-     * 
-     * @param mix $val
-     * @param string $format
-     * @return string
-     */
-    public static function convert_datetime($val = "", string $format = 'd-m-Y H:i:s'): string
+    public static function convert_datetime($val, string $format = 'd-m-Y H:i:s'): string
     {
         if (empty($val)) {
             return "";
@@ -55,22 +49,9 @@ class F_datetime
         return date_format($obj, $format);
     }
 
-    /**
-     * 
-     * @param mix $val
-     * @param string $format
-     * @return string
-     */
-    public static function convert_date($val = "", string $format = 'd-m-Y'): string
+    public static function convert_date($val, string $format = 'd-m-Y'): string
     {
-        if (empty($val)) {
-            return "";
-        }
-        $obj = date_create($val);
-        if ($obj === false) {
-            return "";
-        }
-        return date_format($obj, $format);
+        return self::convert_datetime($val, $format);
     }
 
     /**
@@ -87,7 +68,7 @@ class F_datetime
         $required = $is_required === true ? "required" : null;
         $end = date("Y") - $year_back;
         $start = $end - $max_year;
-        $select = '<select name="year" ' . $required . ' class="form-control">';
+        $select = '<select name="year" ' . $required . ' class="form-select">';
         $select .= $with_empty === true ? "<option value='' >Jaar</option>" : "";
         for ($year = $start; $year <= $end; $year++) {
             $ckk = $id == $year ? "selected" : '';
@@ -112,7 +93,7 @@ class F_datetime
         $date = new DateTime;
         $date->setISODate($resultYear, 53);
         $weekMax = ($date->format("W") === "53" ? 53 : 52);
-        $select = '<select name="week" ' . $required . '  class="form-control">';
+        $select = '<select name="week" ' . $required . '  class="form-select">';
         $select .= $with_empty === true ? "<option value='' >Week</option>" : "";
         for ($i = 1; $i <= $weekMax; $i++) {
             $week = mb_strlen($i) === 1 ? '0' . $i : $i;
@@ -133,7 +114,7 @@ class F_datetime
     public static function select_day(int $id = 0, bool $with_empty = false, bool $is_required = true): string
     {
         $required = $is_required === true ? "required" : null;
-        $select = '<select name="day" ' . $required . ' class="form-control">';
+        $select = '<select name="day" ' . $required . ' class="form-select">';
         $select .= $with_empty === true ? "<option value='' >Dag</option>" : "";
         for ($day = 1; $day <= 31; $day++) {
             $ckk = $id == $day ? "selected" : '';
@@ -185,7 +166,7 @@ class F_datetime
     public static function select_month(int $id = 0, bool $with_empty = false, bool $is_required = true): string
     {
         $required = $is_required === true ? "required" : null;
-        $select = '<select name="month" ' . $required . ' class="form-control">';
+        $select = '<select name="month" ' . $required . ' class="form-select">';
         $select .= $with_empty === true ? "<option value='' >Maand</option>" : "";
         for ($month = 1; $month <= 12; $month++) {
             $ckk = $id == $month ? "selected" : '';

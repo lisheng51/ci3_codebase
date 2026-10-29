@@ -14,7 +14,7 @@
                 <tbody id="itemContainer">
                     <?php foreach ($listdb as $value) : ?>
                         <tr>
-                            <td><button class="btn btn-info btn-sm" data-toggle="collapse" data-target="#Info_<?= $value[PermissionGroupModel::$primaryKey]; ?>">Info</button> </td>
+                            <td><button class="btn btn-info btn-sm" data-bs-toggle="collapse" data-bs-target="#Info_<?= $value[PermissionGroupModel::$primaryKey]; ?>">Info</button> </td>
                             <td>
                                 <input type="hidden" name="sort_list[<?= $value[PermissionGroupModel::$primaryKey] ?>]" value="<?= $value['sort_list_group'] ?>">
                                 <button type="button" class="btn btn-info btn-sm" id="start_ajax_sort"><?= lang("sort_icon") ?></button>
@@ -30,7 +30,7 @@
                                     <?php foreach ($value["listdbPermission"] as $module => $listdb2) : list($name, $toggleId) = explode("#_#", $module); ?>
                                         <li class="list-group-item"><?= $name ?>:<br>
                                             <?php foreach ($listdb2 as $value2) : ?>
-                                                <span class="badge badge-info"><?= $value2['checkbox_label'] ?></span>
+                                                <span class="badge text-bg-info"><?= $value2['checkbox_label'] ?></span>
                                             <?php endforeach; ?>
                                         </li>
                                     <?php endforeach; ?>

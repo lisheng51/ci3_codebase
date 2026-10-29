@@ -9,7 +9,7 @@ class Module extends Back_Controller
     {
         $id = CIInput()->post("editid") ?? 0;
         $rsdb = ModuleModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . ' is niet gevonden!';
             $json["status"] = "error";
             exit(json_encode($json));
@@ -60,35 +60,10 @@ class Module extends Back_Controller
         exit(json_encode($json));
     }
 
-    #[DisplayAttribute('Module bijwerken', '')]
-    public function update($dir = 'back')
-    {
-        $moduleId = CIInput()->post('id') ?? 0;
-        $arrModule = ModuleModel::getOneById(intval($moduleId));
-        if (empty($arrModule) === true) {
-            $json["status"] = "error";
-            $json['msg'] = 'Geen module gevonden!';
-            exit(json_encode($json));
-        }
-        $data = ModuleModel::getInfo($arrModule["path"]);
-        if (empty($data)) {
-            $json["status"] = "error";
-            $json['msg'] = 'Geen info gevonden!';
-            exit(json_encode($json));
-        }
-
-        ModuleModel::update($data, $dir);
-        ModuleModel::setup($data);
-        $json["msg"] = "Module " . $data["path_description"] . " is bijgewerkt!";
-        $json["status"] = "good";
-        add_app_log($json["msg"]);
-        exit(json_encode($json));
-    }
-
     #[DisplayAttribute('Module toevoegen', '')]
     public function add($dir = 'back')
     {
-        $path = CIInput()->post('path') ?? "";
+        $path = CIInput()->post('modulepath') ?? "";
         $data = ModuleModel::getInfo($path);
         if (empty($data)) {
             $json["status"] = "error";
@@ -97,10 +72,21 @@ class Module extends Back_Controller
         }
 
         ModuleModel::update($data, $dir);
-        ModuleModel::setup($data);
-        $json["msg"] = "Module " . $data["path_description"] . " is geïnstalleerd!";
+        $confirmed = CIInput()->post('confirm_sql') ?? [];
+        $sqlResult = ModuleModel::setup($data, is_array($confirmed) ? $confirmed : []);
+        foreach ($sqlResult["sql"] as $sql) {
+            add_app_log($sql);
+        }
+        $json["msg"] = "Module " . $data["path_description"] . " is bijgewerkt!";
+        if (!empty($sqlResult["sql"])) {
+            $json["msg"] .= " " . count($sqlResult["sql"]) . " tabelwijziging(en) uitgevoerd.";
+        }
+        if (!empty($sqlResult["warning"])) {
+            $json["msg"] .= "<br>" . implode("<br>", array_map('htmlspecialchars', $sqlResult["warning"]));
+        }
+        // ENGINE changes and drops need confirmation, the overview posts the keys back as confirm_sql
+        $json["confirm"] = array_map(fn($sql) => ["sql" => $sql, "key" => sha1($sql)], $sqlResult["confirm"]);
         $json["status"] = "good";
-        add_app_log($json["msg"]);
         exit(json_encode($json));
     }
 
@@ -112,7 +98,7 @@ class Module extends Back_Controller
             redirect($this->controller_url);
         }
         $rsdb = ModuleModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . ' is niet gevonden!';
             $json["status"] = "error";
             exit(json_encode($json));
@@ -175,7 +161,7 @@ class Module extends Back_Controller
         }
 
         $rsdb = ModuleModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             redirect($this->controller_url);
         }
         $data["rsdb"] = $rsdb;
@@ -205,8 +191,8 @@ class Module extends Back_Controller
 
     private function getNew(array $listdbnow = []): array
     {
-        $modulesmap = directory_map(FCPATH  . 'modules' . DIRECTORY_SEPARATOR, 1);
-        $arrResultNew[] = '_core';
+        $modulesmap = directory_map(MODULESPATH, 1);
+        $arrResultNew[] = ModuleModel::CorePath;
         $arrResultNow = [];
         foreach ($modulesmap as $module) {
             $arrResultNew[] = rtrim($module, DIRECTORY_SEPARATOR);

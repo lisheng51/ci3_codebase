@@ -1,6 +1,6 @@
 <ul class="nav nav-tabs">
-    <li class="nav-item"><a class="nav-link active" href="#profile" data-toggle="tab">Algemeen</a></li>
-    <li class="nav-item"><a class="nav-link" href="#logindata" data-toggle="tab">Account</a></li>
+    <li class="nav-item"><a class="nav-link active" href="#profile" data-bs-toggle="tab">Algemeen</a></li>
+    <li class="nav-item"><a class="nav-link" href="#logindata" data-bs-toggle="tab">Account</a></li>
 </ul>
 <form id="send" method="POST">
     <div class="tab-content">
@@ -10,7 +10,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Emailadres</label>
                                 <div class="input-group">
                                     <input type="email" class="form-control" disabled value="<?= $rsdb["emailaddress"] ?>">
@@ -22,14 +22,14 @@
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Wachtwoord oud*</label>
                                 <input type="password" name="old_password" class="form-control" placeholder="*********">
                             </div>
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Wachtwoord nieuw*</label>
                                 <input type="password" name="password" class="form-control" placeholder="*********">
                             </div>
@@ -46,11 +46,11 @@
                             <img src="<?= LoginModel::show2FAQrcode($rsdb["2fa_secret"] ?? "") ?>" />
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <?= $select_2fa_status; ?>
                             </div>
-                            <div class="form-group">
-                                <input type="text" name="webapp_one_code" maxlength="6" class="form-control" value="" placeholder="" />
+                            <div class="mb-3">
+                                <input type="text" name="_core_one_code" maxlength="6" class="form-control" value="" placeholder="" />
                             </div>
 
                         </div>
@@ -73,13 +73,13 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Naam*</label>
                                 <input type="text" required maxlength="50" name="display_info" class="form-control" value="<?= $rsdb["display_info"] ?>" placeholder="">
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Telefoonnummer</label>
                                 <input type="text" maxlength="10" name="phone" pattern="[0-9]{10}" class="form-control" value="<?= $rsdb["phone"] ?>" placeholder="Telefoonnummer">
                             </div>
@@ -92,7 +92,7 @@
 
     <div class="row mt-3">
         <div class="col-md-2">
-            <div class="form-group">
+            <div class="mb-3">
                 <?= add_csrf_value(); ?>
                 <input type="hidden" name="nav_bookmark" value="<?= $rsdb["nav_bookmark"] ?? 0 ?>" />
                 <input type="hidden" name="redirect_url" value="<?= $rsdb["redirect_url"] ?? "back/home" ?>" />

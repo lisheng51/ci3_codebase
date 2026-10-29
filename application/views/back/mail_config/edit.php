@@ -4,68 +4,68 @@
         <form method="POST" id="send">
             <div class="row">
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>SMTP gebruikersnaam*</label>
                         <input type="email" class="form-control" name="user" required value="<?= $rsdb["user"] ?? ""; ?>" />
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>SMTP afzender naam*</label>
                         <input type="text" class="form-control" name="name" required value="<?= $rsdb["name"] ?? ""; ?>" />
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>SMTP server*</label>
                         <input type="text" class="form-control" name="host" required value="<?= $rsdb["host"] ?? ""; ?>" />
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>SMTP wachtwoord</label>
                         <input type="password" class="form-control" name="pass" value="<?= $rsdb["pass"] ?? ""; ?>" />
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>SMTP poort*</label>
                         <input type="text" class="form-control" name="port" required value="<?= $rsdb["port"] ?? ""; ?>" />
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>SMTP crypto</label>
                         <input type="text" class="form-control" name="crypto" value="<?= $rsdb["crypto"] ?? ""; ?>" />
                     </div>
                 </div>
 
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Client ID</label>
                         <input type="text" class="form-control" name="client_id" value="<?= $rsdb["client_id"] ?? ""; ?>" />
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Client Secret</label>
                         <input type="text" class="form-control" name="client_secret" value="<?= $rsdb["client_secret"] ?? ""; ?>" />
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Tenant ID</label>
                         <input type="text" class="form-control" name="tenant_id" value="<?= $rsdb["tenant_id"] ?? ""; ?>" />
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Refresh token</label>
                         <input type="text" class="form-control" name="refresh_token" value="<?= $rsdb["refresh_token"] ?? ""; ?>" />
                     </div>
                 </div>
                 <div class="col-6">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Test instelling</label>
                         <div class="input-group">
                             <input type="text" id="to_email" placeholder="..@.." class="form-control">
@@ -78,7 +78,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="hidden" name="mail_config_id" value="<?= $rsdb["mail_config_id"] ?? 0; ?>" />
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button($rsdb) ?>

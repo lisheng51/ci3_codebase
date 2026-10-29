@@ -28,7 +28,7 @@ class Change_log extends Back_Controller
 
     private function sortList(array $arr_result_data = [], int $page_limit = 0, string $sort_by_as = "created_at_asc")
     {
-        if (empty($arr_result_data) === true) {
+        if (empty($arr_result_data)) {
             return $arr_result_data;
         }
 
@@ -42,10 +42,7 @@ class Change_log extends Back_Controller
                 return strtotime($a["created_at"]) - strtotime($b["created_at"]);
             });
         }
-
-        $limit = $page_limit > 0 ? $page_limit : c_key('webapp_default_show_per_page');
-        $page = (CIInput()->post_get("page_number") == null) ? 0 : (CIInput()->post_get("page_number") * $limit) - $limit;
-
+        list($limit, $page) = GlobalModel::limitAndPage($page_limit);
         return array_slice($arr_result_data, $page, $limit);
     }
 }

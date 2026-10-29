@@ -3,7 +3,7 @@
     foreach ($listdb as $key => $value) :
         $status = $key === 0 ? "active" : null;
     ?>
-        <li class="nav-item"><a class="nav-link <?= $status ?>" href="#mail_temp_<?= $value[MailTempModel::$primaryKey] ?>" data-toggle="tab"><?= $value['trigger_name'] ?></a></li>
+        <li class="nav-item"><a class="nav-link <?= $status ?>" href="#mail_temp_<?= $value[MailTempModel::$primaryKey] ?>" data-bs-toggle="tab"><?= $value['trigger_name'] ?></a></li>
     <?php endforeach ?>
 </ul>
 
@@ -18,14 +18,14 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label>Onderwerp*</label>
                                     <input type="text" maxlength="100" class="form-control" name="mail_temp_subject[<?= $value[MailTempModel::$primaryKey] ?>]" required value="<?= $value["subject"] ?? ""; ?>" />
                                 </div>
                             </div>
                             <div class="col-12">
                                 <label>Inhoud*</label>
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <textarea class="form-control tinymce" name="mail_temp_body[<?= $value[MailTempModel::$primaryKey] ?>]"><?= $value["body"] ?? ""; ?></textarea>
                                 </div>
                             </div>
@@ -37,7 +37,7 @@
     </div>
     <div class="row mt-3">
         <div class="col-12">
-            <div class="form-group">
+            <div class="mb-3">
                 <?= add_csrf_value(); ?>
                 <?= add_submit_button('mail_temp') ?>
             </div>

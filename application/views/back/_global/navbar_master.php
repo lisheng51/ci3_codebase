@@ -1,16 +1,16 @@
 <ul class="navbar-nav bg-gray-900 sidebar sidebar-dark accordion" id="accordionSidebar">
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= site_url(LoginModel::redirectUrl()) ?>">
-        <div class="sidebar-brand-text"><?= c_key('webapp_name') ?></div>
+        <div class="sidebar-brand-text"><?= c_key('_core_name') ?></div>
     </a>
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#Logging">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#Logging">
             <i class="fas fa-book fa-fw"></i>
             <span>Logging</span>
         </a>
-        <div id="Logging" class="collapse" data-parent="#accordionSidebar">
+        <div id="Logging" class="collapse" data-bs-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="<?= site_url($path_name . '/api/log') ?>">API</a>
                 <a class="collapse-item" href="<?= site_url($path_name . '/sendmail/index') ?>">Sendmail</a>
@@ -25,11 +25,11 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#Account">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#Account">
             <i class="fas fa-user fa-fw"></i>
             <span>Account</span>
         </a>
-        <div id="Account" class="collapse" data-parent="#accordionSidebar">
+        <div id="Account" class="collapse" data-bs-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="<?= site_url($path_name . '/api/index') ?>">API</a>
                 <a class="collapse-item" href="<?= site_url($path_name . '/user/index') ?>">Overzicht</a>
@@ -42,11 +42,11 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#Systeem">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#Systeem">
             <i class="fas fa-cog fa-fw"></i>
             <span>Systeem</span>
         </a>
-        <div id="Systeem" class="collapse" data-parent="#accordionSidebar">
+        <div id="Systeem" class="collapse" data-bs-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="<?= site_url($path_name . '/module/index') ?>">Module</a>
                 <a class="collapse-item" href="<?= site_url($path_name . '/permission_group/index') ?>">Groep</a>

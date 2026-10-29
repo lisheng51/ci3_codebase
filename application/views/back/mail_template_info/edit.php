@@ -12,7 +12,7 @@
     foreach ($ul as $key => $value) :
         $status = $key === 0 ? "active" : null;
         ?>
-        <li class="nav-item"><a class="nav-link <?= $status ?>" href="#<?= $value ?>" data-toggle="tab"><?= $value ?></a></li>
+        <li class="nav-item"><a class="nav-link <?= $status ?>" href="#<?= $value ?>" data-bs-toggle="tab"><?= $value ?></a></li>
     <?php endforeach; ?>   
 </ul>
 
@@ -37,7 +37,7 @@
                                     ?>
                                     <div class="col-12">
                                         <label><?= $key ?></label>
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <?= $input ?>
                                         </div>
                                     </div>
@@ -53,7 +53,7 @@
     </div>
     <div class="row mt-3">
         <div class="col-12">
-            <div class="form-group">
+            <div class="mb-3">
                 <?= add_csrf_value(); ?>
                 <?= add_submit_button('config') ?>
             </div>

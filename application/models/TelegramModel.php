@@ -5,11 +5,14 @@ class TelegramModel
 
     public static $groupChatId = ENVIRONMENT_TELEGRAM_GROUP;
     public static $default_chat_id = ENVIRONMENT_TELEGRAM_USER;
+    public static $default_bot_token = ENVIRONMENT_TELEGRAM_BOT;
+    public static $addLogExtra = true;
     private static $limit = 4000;
+    private static $maxRetries = 3;
 
     public static function loadObject(string $setToken = ''): My_telegram
     {
-        $bot_token = ENVIRONMENT_TELEGRAM_BOT;
+        $bot_token = self::$default_bot_token;
         if (!empty($setToken)) {
             $bot_token = $setToken;
         }
@@ -18,45 +21,88 @@ class TelegramModel
         return $object;
     }
 
-    public static function log(string $text = '', string $setChatId = '')
+    private static function logExtra(string $text = ''): string
+    {
+        if (!self::$addLogExtra) {
+            return $text;
+        }
+        $text .= PHP_EOL . PHP_EOL . 'datetime: ' . date('d-m-Y H:i:s');
+        $text .= PHP_EOL . 'timezone: ' . date_default_timezone_get();
+        $text .= PHP_EOL . 'site: ' . ENVIRONMENT_BASE_URL;
+        $text .= PHP_EOL . 'db: [' . ENVIRONMENT_DATABASE . '] ' . getDatabaseServerInfo();
+        $text .= PHP_EOL . 'app: ' . c_key('_core_app_buildnr') . ' # php:' . phpversion();
+        $text .= PHP_EOL . 'ip: ' . CIInput()->ip_address() . ' # user id:' . LoginModel::userId();
+        $text .= PHP_EOL . 'path: ' . uri_string();
+        $text .= PHP_EOL . 'web server: ' . getWebServerInfo();
+        return $text;
+    }
+
+    public static function log(string $text = '', string $setChatId = '', array $button = [])
     {
         if (empty($text)) {
             return;
         }
 
-        $text .= PHP_EOL . 'datetime: ' . date('d-m-Y H:i:s');
-        $text .= PHP_EOL . 'site: ' . ENVIRONMENT_BASE_URL;
-        $text .= PHP_EOL . 'database: ' . ENVIRONMENT_DATABASE;
-        $text .= PHP_EOL . 'version: ' . c_key('_core_app_buildnr');
-        $text .= PHP_EOL . 'path: ' . uri_string();
-
         $chat_id = self::getChatId($setChatId);
-        $currentMessage = $text;
+        $currentMessage = self::logExtra($text);
 
-        if (strlen($currentMessage) <= self::$limit) {
-            self::send($currentMessage, $chat_id);
-        } else {
-            while (strlen($currentMessage) > self::$limit) {
-                $rest = substr($currentMessage, 0,  self::$limit);
-                self::send($rest, $chat_id);
-                $currentMessage = substr($currentMessage, self::$limit);
-            }
+        while (strlen($currentMessage) > self::$limit) {
+            $part = substr($currentMessage, 0, self::$limit);
+            self::send($part, $chat_id, $button);
+            $currentMessage = substr($currentMessage, self::$limit);
+            usleep(200000);
+        }
 
-            if (strlen($currentMessage) > 0) {
-                self::send($currentMessage, $chat_id);
-            }
+        if (strlen($currentMessage) > 0) {
+            self::send($currentMessage, $chat_id, $button);
         }
     }
 
-    private static function send(string $text = '', string $chat_id = '')
+    private static function send(string $text, string $chat_id, array $button = []): bool
     {
-        $content = ['parse_mode' => 'HTML', 'chat_id' => $chat_id, 'text' => $text];
         $object = self::loadObject();
-        $res = $object->sendMessage($content);
-        return $res["ok"];
+        $previewOptions = ['is_disabled' => true];
+        $content = [
+            'parse_mode' => 'HTML',
+            'link_preview_options' => json_encode($previewOptions),
+            'chat_id' => $chat_id,
+            'text' => $text
+        ];
+
+        if (!empty($button)) {
+            $content['reply_markup'] = json_encode($button);
+        }
+
+        $tries = 0;
+        $success = false;
+
+        while ($tries < self::$maxRetries && !$success) {
+            try {
+                $response = $object->sendMessage($content);
+                if (!isset($response['ok']) || !$response['ok']) {
+                    $desc = $response['description'] ?? 'Unknown Telegram error';
+                    error_log("Telegram send error ($tries): " . $desc);
+                    sleep(2);
+                } else {
+                    $success = true;
+                }
+            } catch (Throwable $ex) {
+                error_log("Telegram exception: " . $ex->getMessage());
+                sleep(2);
+            }
+            $tries++;
+        }
+
+        if (!$success) {
+            $logfile = APPPATH . 'logs/telegram-failed-' . date('Y-m-d') . '.log';
+            $msg = "[" . date('H:i:s') . "] Failed to send to {$chat_id}: " . mb_substr($text, 0, 1000) . PHP_EOL;
+            @file_put_contents($logfile, $msg, FILE_APPEND);
+        }
+
+        return $success;
     }
 
-    private static function getChatId(string $setChatId = '')
+    private static function getChatId(string $setChatId = ''): string
     {
         if (!empty($setChatId)) {
             return $setChatId;
@@ -71,91 +117,5 @@ class TelegramModel
         $object = self::loadObject();
         //$object->endpoint('deleteWebhook', [], false);
         return $object->getUpdates();
-    }
-
-    public static function sms(string $recipients = "", $text = "")
-    {
-        $originator = c_key('webapp_messagebird_originator');
-        $params = [
-            'recipients' => $recipients,
-            'originator' => $originator,
-            'body' => $text
-        ];
-
-        $log_file_extension = config_item('log_file_extension');
-        $log_path = config_item('log_path');
-        $filename = $log_path . 'sms-' . date('Y-m-d') . '.' . $log_file_extension;
-        $response = self::curlSMS('https://rest.messagebird.com/messages', $params);
-
-        $data["time"] = date('H:i:s');
-        $data["response"] = $response;
-        $data["from_number"] = $originator;
-        $data["to_number"] = $recipients;
-        $data["body"] = $text;
-        $string = json_encode($data);
-        write_file($filename, $string . PHP_EOL, 'a');
-
-        $object = json_decode($response);
-        if (isset($object->id)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public static function smsLogListByDate(string $date = ''): array
-    {
-        if (empty($date)) {
-            $date = date('Y-m-d');
-        }
-        $log_file_extension = config_item('log_file_extension');
-        $log_path = config_item('log_path');
-        $filename = $log_path . 'sms-' . $date . '.' . $log_file_extension;
-
-        $data = [];
-        if (!file_exists($filename) || !is_readable($filename)) {
-            return $data;
-        }
-
-        if (($handle = fopen($filename, 'r')) !== false) {
-            while (($row = fgets($handle)) !== false) {
-                $data[] = json_decode($row, true);
-            }
-            fclose($handle);
-        }
-
-        return $data;
-    }
-
-    private static function curlSMS(string $url = "", array $params = [])
-    {
-        if (empty($url) === true || filter_var($url, FILTER_VALIDATE_URL) === false) {
-            return;
-        }
-        $apiKey = c_key('webapp_messagebird_api_key');
-        $httpheaders = array(
-            "Authorization:  AccessKey $apiKey"
-        );
-        $fields_string = http_build_query($params);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_HEADER, 0); //return url reponse header
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $httpheaders);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 100020);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            return null;
-        }
-        curl_close($ch);
-        if ($response === false || empty($response) === true) {
-            return null;
-        }
-        return $response;
     }
 }

@@ -33,7 +33,6 @@ class Api_service
         if (curl_errno($ch)) {
             return "";
         }
-        curl_close($ch);
         return $response;
     }
 
@@ -44,7 +43,7 @@ class Api_service
             return "";
         }
         $select_name = empty($name) === false ? $name : "prefix";
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $select .= "<option value='' ></option>";
         foreach ($listdb as $rs) {
             $ckk = $value == $rs['value'] ? "selected" : '';
@@ -61,7 +60,7 @@ class Api_service
             return "";
         }
         $select_name = empty($name) === false ? $name : "nationality";
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $select .= "<option value='' ></option>";
         foreach ($listdb as $rs) {
             $ckk = $value == $rs['nationality'] ? "selected" : '';
@@ -112,7 +111,7 @@ class Api_service
             return "";
         }
         $select_name = empty($name) === false ? $name : "province";
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $select .= "<option value='' ></option>";
         foreach ($listdb as $rs) {
             $ckk = $value == $rs['name'] ? "selected" : '';

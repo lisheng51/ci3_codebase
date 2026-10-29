@@ -16,7 +16,7 @@
                         <tr>
                             <td><button type="button" class="btn btn-info btn-sm" id="start_ajax_sort"><?= lang("sort_icon") ?></button> <?= $value["path_description"]; ?> <input type="hidden" name="sort_list[<?= $value['module_id'] ?>]" value="<?= $value['sort_list'] ?>"></td>
                             <td>
-                                <button type="button" class="btn btn-warning btn-sm updatemodule" data-search_data="<?= $value["module_id"]; ?>"><?= lang("reset_icon") ?></button>
+                                <button type="button" class="btn btn-warning btn-sm updatemodule" data-search_data="<?= $value["path"]; ?>"><?= lang("reset_icon") ?></button>
                             </td>
                             <td><?= $value["is_active"] ?></td>
                             <td>
@@ -35,13 +35,8 @@
     ajax_sort(site_url + "back/module/sortList");
     ajax_inline_boolean(module_url + 'back/module/editInline', false);
     $('.updatemodule').click(function() {
-        let moduleID = $(this).data('search_data');
+        let modulepath = $(this).data('search_data');
         let button = $(this);
-        let data = {
-            id: moduleID,
-            [csrf_token_name]: csrf_hash
-        };
-        let submit_button_text = button.html();
-        loadPermissionsort(button, data, submit_button_text, 'update/back');
+        loadPermissionsort(button, modulepath);
     });
 </script>

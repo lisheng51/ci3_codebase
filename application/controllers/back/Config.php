@@ -13,9 +13,9 @@ class Config extends Back_Controller
         }
         $data["title"] = $this->title_module;
         ConfigModel::$configNow = ConfigModel::getAll();
-        $data["webapp_smtp_pass"] = "";
-        if (!empty(ConfigModel::$configNow["webapp_smtp_pass"])) {
-            $data["webapp_smtp_pass"] = GlobalModel::decryptData(ConfigModel::$configNow["webapp_smtp_pass"]);
+        $data["_core_smtp_pass"] = "";
+        if (!empty(ConfigModel::$configNow["_core_smtp_pass"])) {
+            $data["_core_smtp_pass"] = GlobalModel::decryptData(ConfigModel::$configNow["_core_smtp_pass"]);
         }
         $this->view_layout("index", $data);
     }
@@ -23,7 +23,7 @@ class Config extends Back_Controller
     private function indexAction()
     {
         $webdbs = CIInput()->post();
-        $webdbs["webapp_smtp_pass"] = GlobalModel::encryptData($webdbs["webapp_smtp_pass"]);
+        $webdbs["_core_smtp_pass"] = GlobalModel::encryptData($webdbs["_core_smtp_pass"]);
         $_core_default_admin_group_ids = CIInput()->post('_core_default_admin_group_ids');
         if (!empty($_core_default_admin_group_ids)) {
             $webdbs['_core_default_admin_group_ids']  = implode(',', $_core_default_admin_group_ids);
@@ -66,13 +66,6 @@ class Config extends Back_Controller
         $mailConfig["client_secret"] = CIInput()->post("client_secret") ?? "";
         $mailConfig["tenant_id"] = CIInput()->post("tenant_id") ?? "";
         $mailConfig["refresh_token"] = CIInput()->post("refresh_token") ?? "";
-
-        if (empty($mailConfig["refresh_token"]) && empty($mailConfig["Password"])) {
-            $json["msg"] = "Password of token is leeg";
-            $json["status"] = "error";
-            exit(json_encode($json));
-        }
-
         $arr_mail["from_email"] = $from_email;
         $arr_mail["to_email"] = $to_email;
         $arr_mail["subject"] = $subject;
@@ -87,11 +80,11 @@ class Config extends Back_Controller
                 $json["status"] = "good";
                 exit(json_encode($json));
             }
-        } catch (\Exception $e) {
-            $debug_result = $e->getMessage();
-            $json["msg"] = $debug_result;
-            $json["status"] = "error";
-            exit(json_encode($json));
+            $json["msg"] = SendMailModel::$lastError ?: "Email is niet verzonden";
+        } catch (\Throwable $e) {
+            $json["msg"] = $e->getMessage();
         }
+        $json["status"] = "error";
+        exit(json_encode($json));
     }
 }

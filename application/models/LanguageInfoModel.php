@@ -39,7 +39,7 @@ class LanguageInfoModel
         $file = $filename . '_lang.php';
         $file_path = "";
         if (empty($moduleName) === false && empty($langname) === false) {
-            $file_path = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $langname . DIRECTORY_SEPARATOR . $file;
+            $file_path = MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $langname . DIRECTORY_SEPARATOR . $file;
         }
         return $file_path;
     }
@@ -48,7 +48,7 @@ class LanguageInfoModel
     {
         $arrResult = [];
         if (empty($moduleName) === false && empty($language) === false) {
-            $modulesmap = directory_map(FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $language . DIRECTORY_SEPARATOR, 1);
+            $modulesmap = directory_map(MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $language . DIRECTORY_SEPARATOR, 1);
             if (empty($modulesmap) === false) {
                 foreach ($modulesmap as $module) {
                     $extension = get_mime_by_extension($module);

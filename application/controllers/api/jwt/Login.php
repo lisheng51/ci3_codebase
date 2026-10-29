@@ -19,7 +19,7 @@ class Login extends API_Controller
         $this->addLog(__METHOD__);
         $dataUser = ApiModel::checkFetchByJWT();
         $base_url = CIInput()->post('base_url');
-        if (empty($base_url) === true) {
+        if (empty($base_url)) {
             ApiModel::outNOK(98, 'base_url is niet gevonden');
         }
         $sec = CIInput()->post('sec') ?? 10;
@@ -35,21 +35,21 @@ class Login extends API_Controller
     public function password()
     {
         $apiLogId = $this->addLog(__METHOD__);
-        $postData = empty($this->arrPost) === true ? CIInput()->post() : $this->arrPost;
+        $postData = empty($this->arrPost) ? CIInput()->post() : $this->arrPost;
 
         $username = $postData["username"] ?? null;
-        if ($username === null || empty($username) === true) {
+        if ($username === null || empty($username)) {
             ApiModel::out('Geen gebruikersnaam gevonden', 98);
         }
 
         $access_code = $postData["access_code"] ?? null;
-        if ($access_code === null || empty($access_code) === true) {
+        if ($access_code === null || empty($access_code)) {
             ApiModel::out('Geen code gevonden', 98);
         }
 
         $arr_rs = LoginModel::getOneByField('username', $username);
 
-        if (empty($arr_rs) === true || empty($arr_rs["access_code"]) === true) {
+        if (empty($arr_rs) || empty($arr_rs["access_code"])) {
             ApiModel::out('Er is geen gebruiker gevonden', 94);
         }
 
@@ -64,7 +64,7 @@ class Login extends API_Controller
         $password1 = $postData["password1"];
         $password2 = $postData["password2"];
 
-        if (empty($password1) === true || empty($password2) === true) {
+        if (empty($password1) || empty($password2)) {
             ApiModel::out('Geen wachtwoord gevonden', 98);
         }
 
@@ -94,10 +94,10 @@ class Login extends API_Controller
     {
 
         $apiLogId = $this->addLog(__METHOD__);
-        $postData = empty($this->arrPost) === true ? CIInput()->post() : $this->arrPost;
+        $postData = empty($this->arrPost) ? CIInput()->post() : $this->arrPost;
 
         $username = $postData["username"] ?? null;
-        if ($username === null || empty($username) === true) {
+        if ($username === null || empty($username)) {
             ApiModel::out('Geen gebruikersnaam gevonden', 98);
         }
 
@@ -111,12 +111,12 @@ class Login extends API_Controller
         }
 
         $access_code = $postData["access_code"] ?? null;
-        if (empty($access_code) === true) {
+        if (empty($access_code)) {
             ApiModel::outNOK(99, 'Code is niet gevonden');
         }
 
         $code = $postData["access_code_cookie"] ?? null;
-        if (empty($code) === true) {
+        if (empty($code)) {
             ApiModel::outNOK(99, 'Code is niet gevonden');
         }
         $key = rawurldecode($code);
@@ -133,7 +133,7 @@ class Login extends API_Controller
         $password1 = $postData["password1"];
         $password2 = $postData["password2"];
 
-        if (empty($password1) === true || empty($password2) === true) {
+        if (empty($password1) || empty($password2)) {
             ApiModel::out('Geen wachtwoord gevonden', 98);
         }
 

@@ -1,5 +1,5 @@
-<?php echo link_tag(sys_asset_url("treetable/jquery.treegrid.css")); ?>
-<?php echo script_tag(sys_asset_url("treetable/jquery.treegrid.min.js")); ?>
+<?= link_tag(sys_asset_url("treetable/jquery.treegrid.css")); ?>
+<?= script_tag(sys_asset_url("treetable/jquery.treegrid.min.js")); ?>
 
 <div class="row">
     <div class="col-12">
@@ -47,7 +47,7 @@
         let permissionid = $(this).data('permissionid');
         let groupid = $(this).data('groupid');
         let ajaxurl = site_url + "back/permission_group/update?gid=" + groupid + "&pid=" + permissionid;
-        $.get(ajaxurl, function(json, status) {
+        myfetch({}, ajaxurl).then(function(json) {
             console.log(json);
         });
     });

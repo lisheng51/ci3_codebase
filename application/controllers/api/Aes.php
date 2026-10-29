@@ -35,17 +35,17 @@ class Aes extends API_Controller
         $data[ApiModel::$primaryKey] = $this->apiId;
         $typeFun = CIInput()->post('typeFun') ?? $this->defaultTypeFun;
 
-        if (empty($typeFun) === true) {
+        if (empty($typeFun)) {
             ApiModel::outNOK(99, "Geen typeFun gevonden!", $apiLogId);
         }
 
         $valuestring = json_encode($data);
-        if (empty($valuestring) === true) {
+        if (empty($valuestring)) {
             ApiModel::outNOK(99, "Geen data gevonden!", $apiLogId);
         }
 
         $tokenString = call_user_func_array([$this, $typeFun], [$valuestring, __FUNCTION__]);
-        if (empty($tokenString) === true) {
+        if (empty($tokenString)) {
             ApiModel::outNOK(99, "Geen data gevonden!", $apiLogId);
         }
 
@@ -66,16 +66,16 @@ class Aes extends API_Controller
         $code = CIInput()->post('code') ?? null;
         $typeFun = CIInput()->post('typeFun') ?? $this->defaultTypeFun;
 
-        if (empty($typeFun) === true) {
+        if (empty($typeFun)) {
             ApiModel::outNOK(99, "Geen typeFun gevonden!", $apiLogId);
         }
 
-        if (empty($code) === true) {
+        if (empty($code)) {
             ApiModel::outNOK(99, "Geen code gevonden!", $apiLogId);
         }
         $valuestring = rawurldecode($code);
         $json = call_user_func_array([$this, $typeFun], [$valuestring, __FUNCTION__]);
-        if (empty($json) === true) {
+        if (empty($json)) {
             ApiModel::outNOK(99, "Geen data gevonden!", $apiLogId);
         }
         ApiModel::outOK($json, $apiLogId);

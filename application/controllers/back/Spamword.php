@@ -63,7 +63,7 @@ class Spamword extends Back_Controller
     {
         $id = CIInput()->post("editid") ?? 0;
         $rsdb = SpamwordModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . ' is niet gevonden!';
             $json["status"] = "error";
             exit(json_encode($json));
@@ -121,12 +121,7 @@ class Spamword extends Back_Controller
 
     private function getList()
     {
-        $page_limit = CIInput()->post("page_limit");
-        $limit = empty($page_limit) ? c_key('webapp_default_show_per_page') : $page_limit;
-
-        $page_number = CIInput()->get("page_number");
-        $page = empty($page_number) ? 0 : ($page_number * $limit) - $limit;
-
+        list($limit, $page) = GlobalModel::limitAndPage();
         $arr_result = [];
         $listdb = SpamwordModel::getList($limit, $page);
         foreach ($listdb as $rs) {

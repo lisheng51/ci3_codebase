@@ -98,7 +98,7 @@ class LoginModel
             $secret = $string_2fa_secret;
         }
 
-        $qrCodeUrl = TwoFactorAuthenticator::getQRCodeGoogleUrl(site_url(), $secret, c_key('webapp_title'));
+        $qrCodeUrl = TwoFactorAuthenticator::getQRCodeGoogleUrl(site_url(), $secret, c_key('_core_title'));
         CISession()->set_userdata('2fa_secret', $secret);
         return $qrCodeUrl;
     }
@@ -194,11 +194,11 @@ class LoginModel
 
     public static function checkPasswordDate(string $password_date = ""): bool
     {
-        if (intval(c_key('webapp_ck_pass_unuse_day')) > 0) {
-            $webapp_ck_pass_unuse_day = c_key('webapp_ck_pass_unuse_day');
-            $webapp_ck_pass_notify_day = c_key("webapp_ck_pass_notify_day") > 0 ? c_key("webapp_ck_pass_notify_day") : 10;
-            $day_msg = $webapp_ck_pass_unuse_day - $webapp_ck_pass_notify_day;
-            $days_ago_no_login = date('Y-m-d H:i:s', strtotime("-$webapp_ck_pass_unuse_day days"));
+        if (intval(c_key('_core_ck_pass_unuse_day')) > 0) {
+            $_core_ck_pass_unuse_day = c_key('_core_ck_pass_unuse_day');
+            $_core_ck_pass_notify_day = c_key("_core_ck_pass_notify_day") > 0 ? c_key("_core_ck_pass_notify_day") : 10;
+            $day_msg = $_core_ck_pass_unuse_day - $_core_ck_pass_notify_day;
+            $days_ago_no_login = date('Y-m-d H:i:s', strtotime("-$_core_ck_pass_unuse_day days"));
             $days_ago_msg = date('Y-m-d H:i:s', strtotime("-$day_msg days"));
             if ($password_date <= $days_ago_msg || $password_date <= $days_ago_no_login) {
                 return false;
@@ -212,8 +212,8 @@ class LoginModel
     {
         $data["password_reset_date"] = date('Y-m-d H:i:s');
         if ($user_id > 0) {
-            $webapp_ck_pass_reset_hour = c_key("webapp_ck_pass_reset_hour") > 0 ? c_key("webapp_ck_pass_reset_hour") : 8;
-            $much_strtotime = '+' . $webapp_ck_pass_reset_hour . ' hours';
+            $_core_ck_pass_reset_hour = c_key("_core_ck_pass_reset_hour") > 0 ? c_key("_core_ck_pass_reset_hour") : 8;
+            $much_strtotime = '+' . $_core_ck_pass_reset_hour . ' hours';
             $data["password_reset_date"] = date('Y-m-d H:i:s', strtotime($much_strtotime));
             self::edit($user_id, $data);
         }

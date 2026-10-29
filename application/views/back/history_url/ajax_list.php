@@ -6,9 +6,9 @@
                 <thead>
                     <tr>
                         <th>
-                            <div class="custom-control custom-checkbox">
-                                <input class="custom-control-input chat_id_select_all" type="checkbox" id="chat_id_selecctall">
-                                <label class="custom-control-label" for="chat_id_selecctall">Datum & Tijd</label>
+                            <div class="form-check">
+                                <input class="form-check-input chat_id_select_all" type="checkbox" id="chat_id_selecctall">
+                                <label class="form-check-label" for="chat_id_selecctall">Datum & Tijd</label>
                             </div>
                         </th>
                         <th>Titel</th>
@@ -20,9 +20,9 @@
                     <?php foreach ($listdb as $value) : ?>
                         <tr id="<?= $value["url_id"]; ?>">
                             <td>
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input chat_id_select" type="checkbox" id="log_id<?= $value['url_id'] ?>" name='ids[]' class="" value="<?= $value['url_id'] ?>">
-                                    <label class="custom-control-label font-weight-normal" for="log_id<?= $value['url_id'] ?>"><?= $value["date"] ?></label>
+                                <div class="form-check">
+                                    <input class="form-check-input chat_id_select" type="checkbox" id="log_id<?= $value['url_id'] ?>" name='ids[]' class="" value="<?= $value['url_id'] ?>">
+                                    <label class="form-check-label fw-normal" for="log_id<?= $value['url_id'] ?>"><?= $value["date"] ?></label>
                                 </div>
                             </td>
                             <td><a href="<?= site_url($value["path"]) ?>"><?= $value["title"] ?></a></td>

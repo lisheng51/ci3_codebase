@@ -18,7 +18,7 @@ class LanguageModel
     public static function selectFolder(string $folder = "", string $name = ''): string
     {
         $select_name = !empty($name) ? $name : 'defaultLanguage';
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $listdb = self::getAll();
         foreach ($listdb as $rs) {
             $ckk = $folder == $rs['folder'] ? "selected" : '';
@@ -52,7 +52,7 @@ class LanguageModel
         }
         $listdb = self::getAllData($dataWhere);
         $select_name = !empty($name) ? $name : self::$primaryKey;
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $select .= $with_empty === true ? "<option value='' >------</option>" : "";
         foreach ($listdb as $rs) {
             $ckk = $id == $rs[self::$primaryKey] ? "selected" : '';
@@ -81,7 +81,7 @@ class LanguageModel
             }
         }
         $listdb = self::getAllData($dataWhere);
-        $select = '<select name="' . $select_name . '[]" class="form-control" multiple>';
+        $select = '<select name="' . $select_name . '[]" class="form-select" multiple>';
         foreach ($listdb as $rs) {
             $ckk = (!empty($haystack) && in_array($rs[self::$primaryKey], $haystack)) ? 'selected' : '';
             $select .= '<option value=' . $rs[self::$primaryKey] . ' ' . $ckk . '>' . $rs["name"] . '</option>';

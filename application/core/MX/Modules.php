@@ -4,7 +4,7 @@
 
 
 /* get module locations from config settings or use the default module location and offset */
-Modules::$locations = [FCPATH . 'modules' . DIRECTORY_SEPARATOR => '../../modules/'];
+Modules::$locations = [MODULESPATH => '../../modules/'];
 
 /* PHP5 spl_autoload */
 spl_autoload_register('Modules::autoload');
@@ -75,7 +75,14 @@ class Modules
     /** Load a module controller **/
     public static function load($module)
     {
-        (is_array($module)) ? list($module, $params) = each($module) : $params = NULL;
+        $params = null;
+        if (is_array($module)) {
+            foreach ($module as $mod => $par) {
+                $module = $mod;
+                $params = $par;
+                break;
+            }
+        }
 
         /* get the requested controller class name */
         $alias = strtolower(basename($module));

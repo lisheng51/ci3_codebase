@@ -23,15 +23,22 @@ class LanguageTagModel
         $listdb = self::AllByLanguage($lang);
         $response = json_encode($listdb);
         update_cache_file($jsonFile, $response);
+        self::$cacheData[$lang] = $listdb;
         return $listdb;
     }
 
+    // lang() wordt tientallen keren per pagina aangeroepen: bestand maar 1x per taal lezen/decoden
+    private static array $cacheData = [];
+
     public static function fetchCache(string $lang = ""): array
     {
+        if (isset(self::$cacheData[$lang])) {
+            return self::$cacheData[$lang];
+        }
         $jsonFile =  $lang . '_' . self::$table . '.json';
-        $response = get_cache_file($jsonFile);
-        if (isJSON($response)) {
-            return json_decode($response, true);
+        $data = json_decode(get_cache_file($jsonFile), true);
+        if (is_array($data)) {
+            return self::$cacheData[$lang] = $data;
         }
         return self::updateCache($lang);
     }

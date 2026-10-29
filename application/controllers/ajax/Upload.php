@@ -31,4 +31,43 @@ class Upload extends Ajax_Controller
         $json["status"] = "good";
         exit(json_encode($json));
     }
+
+    public function delete()
+    {
+        $json["result"] =  "";
+        $json["status"] = "good";
+        exit(json_encode($json));
+    }
+
+    public function action()
+    {
+        $inputname = CIInput()->post('field') ?? '';
+        if (empty($inputname)) {
+            $json["result"] =  "";
+            $json["status"] = "error";
+            exit(json_encode($json));
+        }
+
+        $user_id = CIInput()->post("user_id") ?? 0;
+        $dir = UploadTypeModel::showDir("", $user_id);
+
+        $folder =  CIInput()->post('folder') ?? '';
+        if (!empty($folder)) {
+            $folder = str_replace('/', DIRECTORY_SEPARATOR, $folder);
+            $dir = UploadModel::$rootFolder . DIRECTORY_SEPARATOR .  $folder . DIRECTORY_SEPARATOR;
+        }
+
+        $defaultValue = '';
+        if (isset($_FILES[$inputname]) && !empty($_FILES[$inputname]['tmp_name'])) {
+            $file = $_FILES[$inputname]['name'];
+            $file_ext = $dir . $file;
+            if (move_uploaded_file($_FILES[$inputname]['tmp_name'], $file_ext)) {
+                $defaultValue = $file;
+            }
+        }
+
+        $json["result"] =  $defaultValue;
+        $json["status"] = "good";
+        exit(json_encode($json));
+    }
 }

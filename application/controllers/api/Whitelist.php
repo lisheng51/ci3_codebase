@@ -6,11 +6,11 @@ class Whitelist extends API_Controller
     private function whitelistModule(string $module = "")
     {
         $module = rtrim($module, DIRECTORY_SEPARATOR);
-        $array = directory_map(FCPATH . 'modules' . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'controllers');
+        $array = directory_map(MODULESPATH . $module . DIRECTORY_SEPARATOR . 'controllers');
         $array_sys_model = [];
         foreach ($array as $folder => $value) {
             $folder = rtrim($folder, DIRECTORY_SEPARATOR);
-            if (is_array($value) === true) {
+            if (is_array($value)) {
                 foreach ($value as $path) {
                     $array_sys_model[] = strtolower($module . '/' . $folder . '/' . rtrim($path, ".php"));
                 }
@@ -70,7 +70,7 @@ class Whitelist extends API_Controller
         $apiLogId = $this->addLog(__METHOD__);
         $listdb[] = $this->routes();
         $listdb[] = $this->whitelistSys();
-        $array_sub = directory_map(FCPATH . 'modules');
+        $array_sub = directory_map(MODULESPATH);
         if (empty($array_sub) === false) {
             $modules = array_keys($array_sub);
             foreach ($modules as $module) {

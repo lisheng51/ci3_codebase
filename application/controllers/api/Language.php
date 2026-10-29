@@ -32,7 +32,7 @@ class Language extends API_Controller
         $arrResult = [];
 
         if (empty($moduleName) === false && empty($language) === false) {
-            $modulesmap = directory_map(FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $language . DIRECTORY_SEPARATOR, 1);
+            $modulesmap = directory_map(MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $language . DIRECTORY_SEPARATOR, 1);
             foreach ($modulesmap as $module) {
                 $extension = get_mime_by_extension($module);
                 if ($extension !== false) {
@@ -69,13 +69,13 @@ class Language extends API_Controller
         $lang = [];
         if (empty($language) === false) {
             $data_file = APPPATH . "language/$language/" . $filename . '_lang.php';
-            if (file_exists($data_file) === true) {
+            if (file_exists($data_file)) {
                 require($data_file);
             }
 
             if (empty($moduleName) === false) {
-                $ck_file_default = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $language . DIRECTORY_SEPARATOR . $filename . '_lang.php';
-                if (file_exists($ck_file_default) === true) {
+                $ck_file_default = MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $language . DIRECTORY_SEPARATOR . $filename . '_lang.php';
+                if (file_exists($ck_file_default)) {
                     require($ck_file_default);
                 }
             }

@@ -4,7 +4,7 @@
         <form id="send">
             <div class="row">
                 <div class="col-6">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Domein*</label>
                         <input type="url" maxlength="100" class="form-control" name="domain" required />
                     </div>
@@ -12,7 +12,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button() ?>
                     </div>

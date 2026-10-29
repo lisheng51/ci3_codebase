@@ -23,7 +23,7 @@ class Permission extends Back_Controller
     {
         $id = CIInput()->post("editid") ?? 0;
         $rsdb = PermissionModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . ' is niet gevonden!';
             $json["status"] = "error";
             exit(json_encode($json));
@@ -65,7 +65,7 @@ class Permission extends Back_Controller
             redirect($this->controller_url);
         }
         $rsdb = PermissionModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . ' is niet gevonden!';
             $json["status"] = "error";
             exit(json_encode($json));

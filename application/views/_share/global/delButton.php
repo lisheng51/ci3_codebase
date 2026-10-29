@@ -13,15 +13,14 @@
             confirmButtonText: "Ja"
         }).then((result) => {
             if (result.value) {
-                var senddata = {
-                    del_id: "<?= $searchData ?>",
-                    [csrf_token_name]: csrf_hash
-                };
-                $.ajax({
-                    data: senddata,
-                    type: 'POST',
-                    dataType: 'json'
-                }).done(function(json) {
+                let formData = new FormData();
+                formData.set([csrf_token_name], csrf_hash);
+                formData.set('del_id', <?= $searchData ?>);
+
+                myfetch({
+                    method: 'POST',
+                    body: formData
+                }).then(json => {
                     if (json.type_done) {
                         switch (json.type_done) {
                             case 'redirect':
@@ -29,15 +28,9 @@
                                     window.location.href = json.redirect_url;
                                 }
                                 break;
-                            default:
-                                break;
                         }
                     }
                     handle_info_box(json.status, json.msg);
-                }).always(function() {
-
-                }).fail(function(jqxhr) {
-                    message_ajax_fail_show(jqxhr);
                 });
             }
         });

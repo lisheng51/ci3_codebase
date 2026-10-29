@@ -10,7 +10,7 @@ class Bookmark extends Back_Controller
     {
         $id = CIInput()->post("del_id") ?? 0;
         $rsdb = BookMarkModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . " is niet gevonden!";
             $json["status"] = "error";
             exit(json_encode($json));
@@ -45,7 +45,7 @@ class Bookmark extends Back_Controller
     {
         $id = CIInput()->post("del_id") ?? 0;
         $rsdb = BookMarkModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . " is niet gevonden!";
             $json["status"] = "error";
             exit(json_encode($json));
@@ -323,7 +323,7 @@ class Bookmark extends Back_Controller
     {
         $rsdb = BookMarkModel::getOneById($id);
 
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . " is niet gevonden!";
             $json["status"] = "error";
             exit(json_encode($json));
@@ -383,17 +383,17 @@ class Bookmark extends Back_Controller
 
     private function remove_btn(array $button_change = [])
     {
-        return '<button id="' . $button_change[BookMarkModel::$primaryKey] . '_removebutton" type="button" data-remove_content_info ="' . $button_change["name"] . '" class="btn btn-danger btn-sm" data-search_data ="' . $button_change[BookMarkModel::$primaryKey] . '" data-del_link="' . $button_change["link"] . '" data-toggle="modal" data-target="#Modal_delete_question" ><i class="fa-fw fas fa-times"></i></button>';
+        return '<button id="' . $button_change[BookMarkModel::$primaryKey] . '_removebutton" type="button" data-remove_content_info ="' . $button_change["name"] . '" class="btn btn-danger btn-sm" data-search_data ="' . $button_change[BookMarkModel::$primaryKey] . '" data-del_link="' . $button_change["link"] . '" data-bs-toggle="modal" data-bs-target="#Modal_delete_question" ><i class="fa-fw fas fa-times"></i></button>';
     }
 
     private function back_btn(array $button_change = [])
     {
-        return '<button id="' . $button_change[BookMarkModel::$primaryKey] . '_backbutton" type="button" data-remove_content_info ="' . $button_change["name"] . '" class="btn btn-success btn-sm" data-search_data ="' . $button_change[BookMarkModel::$primaryKey] . '" data-del_link="' . $button_change["link"] . '" data-toggle="modal" data-target="#Modal_back_question" ><i class="fa-fw fas fa-recycle"></i></button>';
+        return '<button id="' . $button_change[BookMarkModel::$primaryKey] . '_backbutton" type="button" data-remove_content_info ="' . $button_change["name"] . '" class="btn btn-success btn-sm" data-search_data ="' . $button_change[BookMarkModel::$primaryKey] . '" data-del_link="' . $button_change["link"] . '" data-bs-toggle="modal" data-bs-target="#Modal_back_question" ><i class="fa-fw fas fa-recycle"></i></button>';
     }
 
     private function add_child_btn(array $button_add = [])
     {
-        return '<button type="button" class="btn btn-success btn-sm" data-search_name ="' . $button_add["name"] . '" data-search_data ="' . $button_add["parent_bookmark_id"] . '" data-add_child_link="' . $button_add["link"] . '" data-toggle="modal" data-target="#Modal_question_add_child" ><i class="fa-fw fa fa-plus"></i></button>';
+        return '<button type="button" class="btn btn-success btn-sm" data-search_name ="' . $button_add["name"] . '" data-search_data ="' . $button_add["parent_bookmark_id"] . '" data-add_child_link="' . $button_add["link"] . '" data-bs-toggle="modal" data-bs-target="#Modal_question_add_child" ><i class="fa-fw fa fa-plus"></i></button>';
     }
 
     #[DisplayAttribute('Bookmark exporteren', '')]
@@ -457,7 +457,7 @@ class Bookmark extends Back_Controller
                 foreach ($rsdb["navBarDataChild"] as $child) {
                     $data2["name"] = $child["name"];
                     $data2["is_sort"] = 0;
-                    $data["icon"] = $child["icon"];
+                    $data2["icon"] = $child["icon"];
                     $data2[UserModel::$primaryKey] =  $userId;
                     $data2["description"] = "import";
                     $data2["parent_bookmark_id"] = $parentId;

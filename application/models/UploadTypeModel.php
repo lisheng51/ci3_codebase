@@ -20,7 +20,7 @@ class UploadTypeModel
     {
         $listdb = self::listDB();
         $select_name = !empty($name) ? $name : self::$primaryKey;
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $select .= $with_empty === true ? "<option value='' >------</option>" : "";
         foreach ($listdb as $rs) {
             $ckk = $id == $rs[self::$primaryKey] ? "selected" : '';
@@ -39,7 +39,7 @@ class UploadTypeModel
             }
         }
         $listdb = self::listDB();
-        $select = '<select name="' . self::$primaryKey . '[]" class="form-control" multiple>';
+        $select = '<select name="' . self::$primaryKey . '[]" class="form-select" multiple>';
         foreach ($listdb as $rs) {
             $ckk = (!empty($haystack) && in_array($rs[self::$primaryKey], $haystack)) ? 'selected' : '';
             $select .= '<option value=' . $rs[self::$primaryKey] . ' ' . $ckk . '>' . $rs["name"] . '</option>';

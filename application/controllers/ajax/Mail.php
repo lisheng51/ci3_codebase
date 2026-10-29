@@ -60,7 +60,7 @@ class Mail extends Ajax_Controller
     {
         $mail_content_js = CIInput()->post("mail_content_js");
         $mail_title_js = CIInput()->post("mail_title_js");
-        $mail_to_address = CIInput()->post("mail_to_address") ?? c_key('webapp_master_email_address');
+        $mail_to_address = CIInput()->post("mail_to_address") ?? c_key('_core_master_email_address');
         if (empty($mail_content_js)) {
             $json["msg"] = "Het voorbeeld email bestaat niet!";
             $json["status"] = "error";

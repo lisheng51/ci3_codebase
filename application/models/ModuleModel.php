@@ -3,6 +3,7 @@
 class ModuleModel
 {
     use BasicModel;
+    public const CorePath = '_core';
     public static function __constructStatic()
     {
 
@@ -25,7 +26,7 @@ class ModuleModel
         }
         $listdb = self::getAll();
         $select_name = !empty($name) ? $name : self::$primaryKey;
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $select .= $with_empty === true ? "<option value='' >------</option>" : "";
         foreach ($listdb as $rs) {
             $ckk = $id == $rs[self::$primaryKey] ? "selected" : '';
@@ -45,7 +46,7 @@ class ModuleModel
             }
         }
         $listdb = self::getAll();
-        $select = '<select name="' . $select_name . '[]" class="form-control" multiple>';
+        $select = '<select name="' . $select_name . '[]" class="form-select" multiple>';
         foreach ($listdb as $rs) {
             $ckk = (!empty($haystack) && in_array($rs[self::$primaryKey], $haystack)) ? 'selected' : '';
             $select .= '<option value=' . $rs[self::$primaryKey] . ' ' . $ckk . '>' . $rs["path_description"] . '</option>';
@@ -57,11 +58,11 @@ class ModuleModel
     public static function getInfo(string $app_path = ""): array
     {
         $data = [];
-        if ($app_path === '_core') {
+        if ($app_path === ModuleModel::CorePath) {
             require(APPPATH . 'info.php');
         }
 
-        $data_file = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $app_path . DIRECTORY_SEPARATOR . 'info.php';
+        $data_file = MODULESPATH . $app_path . DIRECTORY_SEPARATOR . 'info.php';
         if (file_exists($data_file)) {
             require($data_file);
         }
@@ -92,19 +93,16 @@ class ModuleModel
         }
     }
 
-    public static function setup(array $fromdata = [])
+    public static function setup(array $fromdata = [], array $confirmed = []): array
     {
-        if (isset($fromdata['use_path']) && $fromdata['use_path']) {
-            $module = $fromdata["path"];
+        $module = $fromdata["path"] ?? "";
+        if (!empty($fromdata['use_path'])) {
             UploadModel::makeDir($module);
-            self::insertSqlFile($module);
         }
-
-        if (isset($fromdata['arrUploadFolder']) && !empty($fromdata['arrUploadFolder'])) {
-            foreach ($fromdata['arrUploadFolder'] as $path) {
-                UploadModel::makeDir($path);
-            }
+        foreach ($fromdata['arrUploadFolder'] ?? [] as $path) {
+            UploadModel::makeDir($path);
         }
+        return self::installSql($module, $confirmed);
     }
 
     public static function copieLiveDataUrl(string $module = "", array $except = []): string
@@ -119,44 +117,77 @@ class ModuleModel
         return $url;
     }
 
-    public static function sqlFiles(string $module = "")
+    public static function sqlPath(string $module = ""): string
+    {
+        if (empty($module) || $module === self::CorePath) {
+            return APPPATH . 'sql' . DIRECTORY_SEPARATOR;
+        }
+        return MODULESPATH . $module . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR;
+    }
+
+    public static function sqlFiles(string $module = ""): array
     {
         $fileList = [];
-        $arrSqlFile = directory_map(APPPATH . 'sql' . DIRECTORY_SEPARATOR);
-        if (!empty($module)) {
-            $linesFilePath = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR;
-            $arrSqlFile = directory_map($linesFilePath);
-        }
-
+        $arrSqlFile = directory_map(self::sqlPath($module), 1);
         if (!empty($arrSqlFile)) {
             foreach ($arrSqlFile as $name) {
+                // Skip subfolders and anything that is not a table file
+                if (!is_string($name) || substr($name, -4) !== '.sql') {
+                    continue;
+                }
                 $fileList[] = basename($name, ".sql");
             }
         }
         return $fileList;
     }
 
+    /**
+     * Create missing tables from sql/*.sql and bring existing tables in line with those files.
+     * ENGINE changes and columns or indexes missing from the files are only applied when listed in $confirmed.
+     */
+    public static function installSql(string $module = "", array $confirmed = []): array
+    {
+        self::insertSqlFile($module);
+        $result = ["sql" => [], "confirm" => [], "warning" => []];
+        foreach (self::sqlFiles($module) as $tableName) {
+            $sync = SchemaModel::syncTable(self::sqlPath($module) . $tableName . '.sql', true, $confirmed);
+            foreach ($result as $key => $value) {
+                $result[$key] = array_merge($value, $sync[$key]);
+            }
+        }
+        return $result;
+    }
+
     private static function insertSqlFile(string $module = "")
     {
         $fileList = self::sqlFiles($module);
-        if (!empty($fileList)) {
-            foreach ($fileList as $tableName) {
-                if (CIDb()->table_exists($tableName) === false) {
-                    $templine = '';
-                    $lines = file(FCPATH . 'modules' . DIRECTORY_SEPARATOR .  $module . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . $tableName . '.sql');
-                    foreach ($lines as $line) {
-                        if (substr($line, 0, 2) == '--' || $line == '') {
-                            continue;
-                        }
-                        $templine .= $line;
-                        if (substr(trim($line), -1, 1) == ';') {
-                            CIDb()->query($templine);
-                            $templine = '';
-                        }
-                    }
-                }
+        foreach ($fileList as $tableName) {
+            if (CIDb()->table_exists($tableName) === false) {
+                self::executeSqlFile(self::sqlPath($module) . $tableName . '.sql');
             }
         }
+    }
+
+    public static function executeSqlFile(string $path = ""): bool
+    {
+        if (!is_file($path)) {
+            return false;
+        }
+        $templine = '';
+        $lines = file($path);
+        foreach ($lines as $line) {
+            if (substr($line, 0, 2) == '--' || trim($line) == '') {
+                continue;
+            }
+            $templine .= $line;
+            if (substr(trim($line), -1, 1) == ';') {
+                if (CIDb()->query($templine) === false) {
+                    return false;
+                }
+                $templine = '';
+            }
+        }
+        return true;
     }
 
     public static function updateSql(array $sqlList = [])
@@ -175,14 +206,14 @@ class ModuleModel
         }
     }
 
-    public static function navbar(string $moduleName = '', string $filename = '_navbar')
+    public static function navbar(string $moduleName = '', string $filename = '_navbar'): string
     {
         if (empty($moduleName)) {
             return "";
         }
         $existInstall = self::getOneByField('path', $moduleName);
         $backPath = AccessCheckModel::$backPath;
-        $ck_file_exist_path = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $backPath . DIRECTORY_SEPARATOR . '_global' . DIRECTORY_SEPARATOR . $filename . '.php';
+        $ck_file_exist_path = MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $backPath . DIRECTORY_SEPARATOR . '_global' . DIRECTORY_SEPARATOR . $filename . '.php';
         if (file_exists($ck_file_exist_path) && !empty($existInstall) && $existInstall["is_active"] > 0) {
             $data['path_name'] = $moduleName . '/' . $backPath;
             $data['moduleName'] = $existInstall["path_description"];
@@ -194,14 +225,14 @@ class ModuleModel
         return "";
     }
 
-    public static function autoNavbar(string $filename = '_navbar')
+    public static function autoNavbar(string $filename = '_navbar'): string
     {
         $content = "";
         $modulesmap = self::getAllByField('is_active', 1);
         $backPath = AccessCheckModel::$backPath;
         foreach ($modulesmap as $module) {
             $moduleName = $module["path"];
-            $ck_file_exist_path = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $backPath . DIRECTORY_SEPARATOR . '_global' . DIRECTORY_SEPARATOR . $filename . '.php';
+            $ck_file_exist_path = MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $backPath . DIRECTORY_SEPARATOR . '_global' . DIRECTORY_SEPARATOR . $filename . '.php';
             if (file_exists($ck_file_exist_path)) {
                 $data['path_name'] = $moduleName . '/' . $backPath;
                 $data['moduleName'] = $module["path_description"];
@@ -214,18 +245,18 @@ class ModuleModel
 
     public static function language(string $lang = "")
     {
-        $modulesmapAll = directory_map(FCPATH . 'modules' . DIRECTORY_SEPARATOR, 1);
+        $modulesmapAll = directory_map(MODULESPATH, 1);
 
         foreach ($modulesmapAll as $module) {
             $moduleName = rtrim($module, DIRECTORY_SEPARATOR);
             if (CIRouter()->module == $moduleName) {
-                $modulesmap = directory_map(FCPATH  . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $lang, 1);
+                $modulesmap = directory_map(MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $lang, 1);
                 if (empty($modulesmap) === false) {
                     foreach ($modulesmap as $filenameLong) {
                         $filename = str_replace('_lang.php', '', rtrim($filenameLong, DIRECTORY_SEPARATOR));
-                        $ck_file_default = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR .  $filename . '_lang.php';
+                        $ck_file_default = MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR .  $filename . '_lang.php';
                         if (file_exists($ck_file_default)) {
-                            CILang()->load($filename, $lang, false, true, FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR);
+                            CILang()->load($filename, $lang, false, true, MODULESPATH . $moduleName . DIRECTORY_SEPARATOR);
                         }
                     }
                 }
@@ -236,18 +267,18 @@ class ModuleModel
     public static function loadLanguageFile(string $moduleName = "", string $filename = "", string $setLang = "")
     {
         $lang = empty($setLang) === true ? LanguageModel::getLanguage() : $setLang;
-        $modulesmap = directory_map(FCPATH  . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $lang, 1);
+        $modulesmap = directory_map(MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $lang, 1);
         if (empty($modulesmap) === false) {
-            $ck_file_default = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR .  $filename . '_lang.php';
+            $ck_file_default = MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR .  $filename . '_lang.php';
             if (file_exists($ck_file_default)) {
-                CILang()->load($filename, $lang, false, true, FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR);
+                CILang()->load($filename, $lang, false, true, MODULESPATH . $moduleName . DIRECTORY_SEPARATOR);
             }
         }
     }
 
     public static function selectModule(string $choose_id = ""): string
     {
-        $select = '<select name="moduleName" class="form-control">';
+        $select = '<select name="moduleName" class="form-select">';
         $select .= "<option value=''>Core</option>";
         $listdb = self::getAllByField('is_active', 1);
         foreach ($listdb as $rs) {
@@ -268,5 +299,15 @@ class ModuleModel
             return true;
         }
         return false;
+    }
+
+    public static function getUrlContent(string $path = ""): string
+    {
+        $userid = LoginModel::userId();
+        $httpheaders = [
+            "User-Id: $userid"
+        ];
+        $content = get_curl(site_url($path), [], 'GET', $httpheaders);
+        return $content ?? '';
     }
 }

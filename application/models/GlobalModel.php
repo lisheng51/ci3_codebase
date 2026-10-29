@@ -3,6 +3,8 @@
 class GlobalModel
 {
     public static $querySegmentPageNumber = 'page_number';
+    public static $querySegmentPageLimit = 'page_limit';
+
     public static function savePostGet()
     {
         if (CIInput()->post()) {
@@ -10,6 +12,12 @@ class GlobalModel
             $formSession[self::$querySegmentPageNumber] = CIInput()->get(self::$querySegmentPageNumber);
             CISession()->set_userdata(self::fetchSessionKey(), $formSession);
         }
+    }
+
+    public static function limitAndPage(int $setLimit = 0): array
+    {
+        $data = self::paginationData($setLimit);
+        return [$data[self::$querySegmentPageLimit], $data['offset']];
     }
 
     public static function fetchSessionKey()
@@ -141,18 +149,33 @@ class GlobalModel
         return CIEncryption()->encrypt($result);
     }
 
-    public static function showPage(int $total = 0, int $per_page = 0, string $url = "")
+    public static function paginationData(int $setLimit = 0, int $total = 0): array
+    {
+        $page_limit = $setLimit > 0 ? $setLimit : CIInput()->get_post(self::$querySegmentPageLimit);
+        $limit = empty($page_limit) ? c_key('_core_default_show_per_page') : $page_limit;
+
+        $page_number = CIInput()->get(self::$querySegmentPageNumber);
+        $offset = empty($page_number) ? 0 : ($page_number * $limit) - $limit;
+
+        if ($total > 0 && $offset >= $total) {
+            $offset = $total;
+        }
+        $data['total'] = $total;
+        $data[self::$querySegmentPageLimit] = intval($limit);
+        $data[self::$querySegmentPageNumber] = intval($page_number);
+        $data['max_page_number'] = ceil($total / $limit);
+        $data['offset'] = intval($offset);
+        return $data;
+    }
+
+    public static function showPage(int $total = 0, int $setLimit = 0, string $url = "")
     {
         $query_string_segment = self::$querySegmentPageNumber;
         $config = [];
-        $page_limit = CIInput()->post("page_limit");
-        $config["per_page"] = empty($page_limit) ? c_key('webapp_default_show_per_page') : $page_limit;
-        if ($per_page > 0) {
-            $config["per_page"] = $per_page;
-        }
-
+        $paginationData = self::paginationData($setLimit, $total);
+        $config["per_page"] = $paginationData[self::$querySegmentPageLimit];
         $config["base_url"] = current_url();
-        if (empty($url) === false) {
+        if (!empty($url)) {
             $config["base_url"] = site_url($url);
         }
         $config["total_rows"] = $total;
@@ -184,7 +207,7 @@ class GlobalModel
         $config['last_tag_open'] = '<li class="page-item"><span class="page-link">';
         $config['last_tag_close'] = '</span></li>';
         $config['cur_tag_open'] = '<li class="page-item active"><span class="page-link">';
-        $config['cur_tag_close'] = '<span class="sr-only">(current)</span></span></li>';
+        $config['cur_tag_close'] = '<span class="visually-hidden">(current)</span></span></li>';
         $config['num_tag_open'] = '<li class="page-item"><span class="page-link">';
         $config['num_tag_close'] = '</span></li>';
         CIPagination()->initialize($config);
@@ -193,7 +216,7 @@ class GlobalModel
 
     public static function checkPasswordDate(string $password_date = "")
     {
-        $data["webapp_ck_pass_notify_day"] = c_key("webapp_ck_pass_notify_day");
+        $data["_core_ck_pass_notify_day"] = c_key("_core_ck_pass_notify_day");
         if (!LoginModel::checkPasswordDate($password_date)) {
             return self::loadview('_share/global/check_password_date', $data, true);
         }
@@ -221,7 +244,7 @@ class GlobalModel
         }
 
         if (empty($moduleName) === false) {
-            $ck_file_exist_path = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . '_share' . DIRECTORY_SEPARATOR . 'global' . DIRECTORY_SEPARATOR . 'alert.php';
+            $ck_file_exist_path = MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . '_share' . DIRECTORY_SEPARATOR . 'global' . DIRECTORY_SEPARATOR . 'alert.php';
             if (file_exists($ck_file_exist_path)) {
                 return self::loadview($moduleName . '/_share/global/alert', $data, true);
             }
@@ -245,7 +268,7 @@ class GlobalModel
                     "name" => "Informatie is niet gevonden",
                     "created_at" => date("Y-m-d H:i:s"),
                     "info" => [
-                        "Contact met opnemen met 0614304050"
+                        "Contact met opnemen met webmaster"
                     ]
                 ]
             ];
@@ -253,7 +276,7 @@ class GlobalModel
         return $data[$key];
     }
 
-    public static function lastVersion(string $path = "")
+    public static function lastVersion(string $path = ModuleModel::CorePath)
     {
         $listdb = self::getInfo($path);
         $lastArr = end($listdb);
@@ -263,18 +286,9 @@ class GlobalModel
     public static function makeSql(string $module = "", array $add_insert_list = [])
     {
         $tables = CIDb()->list_tables();
-        $linesFilePath = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR;
-        if (empty($module)) {
-            $linesFilePath = APPPATH . 'sql' . DIRECTORY_SEPARATOR;
-        }
-
-        $fileList = [];
-        $arrSqlFile = directory_map($linesFilePath);
-        if (empty($arrSqlFile) === false && empty($tables) === false) {
-            foreach ($arrSqlFile as $name) {
-                $fileList[] = basename($name, ".sql");
-            }
-
+        $linesFilePath = ModuleModel::sqlPath($module);
+        $fileList = ModuleModel::sqlFiles($module);
+        if (empty($fileList) === false && empty($tables) === false) {
             foreach ($tables as $table) {
                 if (in_array($table, $fileList) === false) {
                     continue;

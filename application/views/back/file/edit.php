@@ -5,14 +5,14 @@
                 <div class="card-header">Algemeen</div>
                 <div class="card-body">
                     <div class="col-md-4">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Type*</label>
                             <?= $select_type ?>
                         </div>
                     </div>
 
                     <div class="col-md-8 <?= $title_status ?>">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Title*</label>
                             <input type="text" class="form-control" placeholder="Naam" name="title" value="<?= $rsdb["title"] ?? ""; ?>" />
                         </div>
@@ -20,7 +20,7 @@
 
 
                     <div class="col-md-12">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Bestand</label>
                             <?= $input_file ?>
                         </div>
@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="col-md-12">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="hidden" name="upload_id" value="<?= $rsdb["upload_id"] ?? 0; ?>" />
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button($rsdb) ?>

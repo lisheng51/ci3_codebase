@@ -3,6 +3,7 @@
 require_once 'env.php';
 $application_folder = 'application';
 $system_path = 'system';
+$modules_folder = 'modules';
 
 switch (ENVIRONMENT) {
     case 'development':
@@ -88,7 +89,7 @@ if (is_dir($application_folder)) {
 }
 
 define('APPPATH', $application_folder . DIRECTORY_SEPARATOR);
-
+define('MODULESPATH', FCPATH . $modules_folder . DIRECTORY_SEPARATOR);
 // The path to the "views" directory
 if (!isset($view_folder[0]) && is_dir(APPPATH . 'views' . DIRECTORY_SEPARATOR)) {
     $view_folder = APPPATH . 'views';

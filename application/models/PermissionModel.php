@@ -160,7 +160,7 @@ class PermissionModel
         self::joinModule();
         self::$sqlWhere = [ModuleModel::$table . ".is_active" => 1, self::$table . '.has_link' => 1];
         $listdb = self::getAll();
-        $select = '<select name="' . $name . '" class="form-control">';
+        $select = '<select name="' . $name . '" class="form-select">';
         $select .= $with_empty ? "<option value='' >------</option>" : "";
         foreach ($listdb as $rsdb) {
             $startPath = $rsdb["use_path"] > 0 ? $rsdb["path"] . '/' : "";
@@ -264,7 +264,7 @@ class PermissionModel
         self::$sqlWhere = array_merge($where, $dataWhere);
         $listdb = self::getAll();
         $select_name = !empty($name) ? $name : self::$primaryKey;
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $select .= $with_empty ? "<option value='' >------</option>" : "";
         foreach ($listdb as $rs) {
             $ckk = $id == $rs[self::$primaryKey] ? "selected" : '';
@@ -323,23 +323,19 @@ class PermissionModel
             return;
         }
 
-        $app_path = 'controllers' . DIRECTORY_SEPARATOR . $link_dir . DIRECTORY_SEPARATOR;
+        $controllerPath = 'controllers' . DIRECTORY_SEPARATOR . $link_dir . DIRECTORY_SEPARATOR;
+        $files = glob(APPPATH . $controllerPath . "*.php");
         if (isset($moduleInfoData['use_path']) && $moduleInfoData['use_path'] === true) {
-            $app_path = "modules" . DIRECTORY_SEPARATOR . $moduleInfoData['path'] . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR . $link_dir . DIRECTORY_SEPARATOR;
+            $files = glob(MODULESPATH . $moduleInfoData['path'] . DIRECTORY_SEPARATOR . $controllerPath . "*.php");
         }
 
-        $modulesmap = directory_map(APPPATH . $app_path, 1);
-
-        if (empty($modulesmap)) {
+        if (empty($files)) {
             return;
         }
 
         $arraysToMerge = [];
-        foreach ($modulesmap as $filenameLong) {
-            if (str_contains($filenameLong, '.php')) {
-                $filename = APPPATH . $app_path . $filenameLong;
-                $arraysToMerge[] = self::listBy($filename, $module_id, $link_dir);
-            }
+        foreach ($files as $filename) {
+            $arraysToMerge[] = self::listBy($filename, $module_id, $link_dir);
         }
 
         $arrResult = array_merge(...$arraysToMerge);

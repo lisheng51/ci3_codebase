@@ -4,20 +4,20 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-4">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Title*</label>
                         <input type="text" class="form-control" placeholder="Naam" name="title" />
                     </div>
                 </div>
                 <div class="col-md-8">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Bestand</label>
                         <input type="file" class="form-control" name="userFiles[]" multiple/>
                     </div>
                 </div>
 
                 <div class="col-md-12">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button() ?>
                     </div>

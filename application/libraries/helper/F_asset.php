@@ -27,7 +27,25 @@ class F_asset
      */
     public static function app(string $module = ''): string
     {
-        return script_tag(site_url("home/js/" . $module));
+        // inline i.p.v. home/js/: scheelt per bezoeker een extra (niet-cachebare) PHP request
+        return '<script>' . self::appVars($module) . '</script>';
+    }
+
+    /**
+     * Globale JS variabelen voor function.js (ook gebruikt door Home::js)
+     *
+     * @param string $module
+     * @return string
+     */
+    public static function appVars(string $module = ''): string
+    {
+        $site_url = site_url('/');
+        $module_url = site_url($module . '/');
+        $csrf_token_name = CISecurity()->get_csrf_token_name();
+        $csrf_hash = CISecurity()->get_csrf_hash();
+        $maxUploadByte = maxUploadByte();
+        $message_ajax_fail = ENVIRONMENT === 'development' ? '' : 'Er is momenteel storing, probeert u het later nog eens!';
+        return "var maxUploadByte = $maxUploadByte; var site_url = '$site_url'; var message_ajax_fail = '$message_ajax_fail'; var module_url = '$module_url'; var csrf_hash = '$csrf_hash';var csrf_token_name = '$csrf_token_name'";
     }
 
     /**
@@ -70,15 +88,6 @@ class F_asset
      * 
      * @return string
      */
-    public static function axios(): string
-    {
-        return script_tag(base_url(self::$nodeModules . "/axios/dist/axios.min.js" . '?v=' . ENVIRONMENT_ASSET_VERSION));
-    }
-
-    /**
-     * 
-     * @return string
-     */
     public static function jqueryUI(): string
     {
         return script_tag(base_url(self::$nodeModules . "/jquery-ui-dist/jquery-ui.min.js" . '?v=' . ENVIRONMENT_ASSET_VERSION));
@@ -115,6 +124,17 @@ class F_asset
 
     /**
      * 
+     * @return string
+     */
+    public static function leaflet(): string
+    {
+        return link_tag(base_url(self::$nodeModules . "/leaflet/dist/leaflet.css" . '?v=' . ENVIRONMENT_ASSET_VERSION)) .
+            script_tag(base_url(self::$nodeModules . "/leaflet/dist/leaflet.js" . '?v=' . ENVIRONMENT_ASSET_VERSION)) .
+            script_tag(sys_asset_url("js/leaflet_map.js"));
+    }
+
+    /**
+     *
      * @return string
      */
     public static function bootstrap(): string

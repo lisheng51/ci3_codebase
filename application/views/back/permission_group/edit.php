@@ -5,20 +5,20 @@
             <div class="row">
                 <div class="col-8">
                     <label>Naam*</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="text" class="form-control" maxlength="50" name="name" required value="<?= $rsdb["name"] ?? ""; ?>" />
                     </div>
                 </div>
                 <div class="col-4">
                     <label>Type*</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <?= PermissionGroupTypeModel::select($rsdb[PermissionGroupTypeModel::$primaryKey] ?? 1); ?>
                     </div>
                 </div>
                 <div class="col-12">
                     <ul class="nav nav-tabs">
                         <?php foreach ($permissions as $module => $listdb) : list($name, $toggleId) = explode("#_#", $module); ?>
-                            <li class="nav-item"><a class="nav-link" href="#module_id_<?= $toggleId ?>" data-toggle="tab"><?= $name ?></a></li>
+                            <li class="nav-item"><a class="nav-link" href="#module_id_<?= $toggleId ?>" data-bs-toggle="tab"><?= $name ?></a></li>
                         <?php endforeach; ?>
                     </ul>
 
@@ -28,9 +28,9 @@
                                 <li id="root_list" style="list-style-type: none;">
                                     <?php foreach ($listdb as $value) : ?>
                                         <div>
-                                            <div class="custom-control custom-checkbox mb-3">
-                                                <input class="custom-control-input label_module_id_<?= $toggleId ?>" type="checkbox" <?= $value['checkbox_value'] ?> name="permission_id[]" value="<?= $value['permission_id'] ?>" id="label_permission_id_<?= $value['permission_id'] ?>">
-                                                <label class="custom-control-label" for="label_permission_id_<?= $value['permission_id'] ?>"><?= $value['checkbox_label'] ?> <a href="<?= site_url($value['debug_link']) ?>" class="badge badge-primary"><?= $value['debug_link'] ?></a></label>
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input label_module_id_<?= $toggleId ?>" type="checkbox" <?= $value['checkbox_value'] ?> name="permission_id[]" value="<?= $value['permission_id'] ?>" id="label_permission_id_<?= $value['permission_id'] ?>">
+                                                <label class="form-check-label" for="label_permission_id_<?= $value['permission_id'] ?>"><?= $value['checkbox_label'] ?> <a href="<?= site_url($value['debug_link']) ?>" class="badge text-bg-primary"><?= $value['debug_link'] ?></a></label>
                                             </div>
                                             <ul style="padding-left: 0;">
                                                 <?= $value["show_child"]; ?>
@@ -38,9 +38,9 @@
                                         </div>
                                     <?php endforeach; ?>
                                 </li>
-                                <div class="custom-control custom-checkbox mb-3">
-                                    <input class="custom-control-input" type="checkbox" id="all_label_module_id_<?= $toggleId ?>">
-                                    <label class="custom-control-label" for="all_label_module_id_<?= $toggleId ?>"><strong>Alles (de)selecteren</strong></label>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="all_label_module_id_<?= $toggleId ?>">
+                                    <label class="form-check-label" for="all_label_module_id_<?= $toggleId ?>"><strong>Alles (de)selecteren</strong></label>
                                 </div>
                             </div>
 
@@ -61,7 +61,7 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="hidden" name="<?= PermissionGroupModel::$primaryKey ?>" value="<?= $rsdb[PermissionGroupModel::$primaryKey] ?? 0; ?>" />
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button($rsdb) ?>
@@ -75,7 +75,7 @@
 </div>
 
 <script>
-    $("input.custom-control-input").on('change', function(e) {
+    $("input.form-check-input").on('change', function(e) {
         if ($(this).is(":checked") && $(this).closest("li").attr('id') != "root_list") {
             console.log("checked");
             recursively_Check(this);
@@ -109,7 +109,9 @@
         console.log(chckboxes);
     }
 
-    $('.nav a:first').tab('show');
+    $('.nav a:first').each(function() {
+        bootstrap.Tab.getOrCreateInstance(this).show();
+    });
     $("form#send").submit(function(e) {
         ajax_form_search($(this));
         e.preventDefault();

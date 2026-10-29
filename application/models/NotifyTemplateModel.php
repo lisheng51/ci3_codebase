@@ -7,13 +7,13 @@ class NotifyTemplateModel
 
     public static function selectFolder(string $moduleName = ''): array
     {
-        $folderPath = DIRECTORY_SEPARATOR . self::$folderName . DIRECTORY_SEPARATOR;
-        if (empty($moduleName) === false) {
-            $folderPath = 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . self::$folderName . DIRECTORY_SEPARATOR;
+        $folderPath = APPPATH . self::$folderName . DIRECTORY_SEPARATOR;
+        if (!empty($moduleName)) {
+            $folderPath = MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . self::$folderName . DIRECTORY_SEPARATOR;
         }
-        $modulesmap = directory_map(APPPATH . $folderPath, 1);
+        $modulesmap = directory_map($folderPath, 1);
         $arrResult = [];
-        if (empty($modulesmap) === false) {
+        if (!empty($modulesmap)) {
             foreach ($modulesmap as $module) {
                 $arrResult[] = rtrim($module, DIRECTORY_SEPARATOR);
             }
@@ -82,7 +82,7 @@ class NotifyTemplateModel
     {
         $arrResult = [];
         if (empty($moduleName) === false && empty($language) === false) {
-            $modulesmap = directory_map(FCPATH. 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . self::$folderName . DIRECTORY_SEPARATOR . $language . DIRECTORY_SEPARATOR, 1);
+            $modulesmap = directory_map(MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . self::$folderName . DIRECTORY_SEPARATOR . $language . DIRECTORY_SEPARATOR, 1);
             if (empty($modulesmap) === false) {
                 foreach ($modulesmap as $module) {
                     $extension = get_mime_by_extension($module);
@@ -115,7 +115,7 @@ class NotifyTemplateModel
         $file = $filename . '.php';
         $file_path = "";
         if (empty($moduleName) === false && empty($langname) === false) {
-            $file_path = FCPATH. 'modules' . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . self::$folderName . DIRECTORY_SEPARATOR . $langname . DIRECTORY_SEPARATOR . $file;
+            $file_path = MODULESPATH . $moduleName . DIRECTORY_SEPARATOR . self::$folderName . DIRECTORY_SEPARATOR . $langname . DIRECTORY_SEPARATOR . $file;
         }
         return $file_path;
     }

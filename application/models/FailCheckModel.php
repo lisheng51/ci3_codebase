@@ -78,8 +78,8 @@ class FailCheckModel
             return self::add($dataAdd);
         }
 
-        $webapp_fail_limit_num = c_key("webapp_fail_limit_num") > 0 ? c_key("webapp_fail_limit_num") : 5;
-        $mod = $arr_data["num"] % $webapp_fail_limit_num;
+        $_core_fail_limit_num = c_key("_core_fail_limit_num") > 0 ? c_key("_core_fail_limit_num") : 5;
+        $mod = $arr_data["num"] % $_core_fail_limit_num;
         if ($mod === 0) {
             CISession()->set_tempdata($arr_type["key"], $arr_data["ip_address"], $arr_type["lock_time"]);
         } else {

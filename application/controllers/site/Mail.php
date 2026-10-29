@@ -52,6 +52,5 @@ class Mail extends Site_Controller
         $text_color = imagecolorallocate($im, 233, 14, 91);
         imagestring($im, 1, 5, 5, "", $text_color);
         imagepng($im);
-        imagedestroy($im);
     }
 }

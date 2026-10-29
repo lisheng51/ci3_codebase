@@ -100,12 +100,7 @@ class User extends Back_Controller
 
     private function getData()
     {
-        $page_limit = CIInput()->post("page_limit");
-        $limit = empty($page_limit) ? c_key('webapp_default_show_per_page') : $page_limit;
-
-        $page_number = CIInput()->get("page_number");
-        $page = empty($page_number) ? 0 : ($page_number * $limit) - $limit;
-
+        list($limit, $page) = GlobalModel::limitAndPage();
         $arr_result = [];
         $listdb = UserModel::getList($limit, $page);
         foreach ($listdb as $rs) {
@@ -271,13 +266,13 @@ class User extends Back_Controller
         $data_login["redirect_url"] = CIInput()->post("redirect_url");
         $data_login["with_2fa"] = 0;
 
-        if ($rsdb["with_2fa"] == 0 && CIInput()->post("with_2fa") > 0 && empty(CIInput()->post("webapp_one_code")) === true) {
+        if ($rsdb["with_2fa"] == 0 && CIInput()->post("with_2fa") > 0 && empty(CIInput()->post("_core_one_code")) === true) {
             $json["msg"] = "2fa code is leeg!";
             $json["status"] = "error";
             exit(json_encode($json));
         }
 
-        $resultStatus2fa = LoginModel::check2FAStatus($uid, CIInput()->post("webapp_one_code"));
+        $resultStatus2fa = LoginModel::check2FAStatus($uid, CIInput()->post("_core_one_code"));
         if ($rsdb["with_2fa"] == 0 && CIInput()->post("with_2fa") > 0 && $resultStatus2fa === false) {
             $json["msg"] = "2fa code is niet juist!";
             $json["status"] = "error";
@@ -324,13 +319,13 @@ class User extends Back_Controller
 
         $data_login["with_2fa"] = 0;
         $data_login["redirect_url"] = CIInput()->post("redirect_url");
-        if ($rsdb["with_2fa"] == 0 && CIInput()->post("with_2fa") > 0 && empty(CIInput()->post("webapp_one_code")) === true) {
+        if ($rsdb["with_2fa"] == 0 && CIInput()->post("with_2fa") > 0 && empty(CIInput()->post("_core_one_code")) === true) {
             $json["msg"] = "2fa code is leeg!";
             $json["status"] = "error";
             exit(json_encode($json));
         }
 
-        $resultStatus2fa = LoginModel::check2FAStatus($uid, CIInput()->post("webapp_one_code"));
+        $resultStatus2fa = LoginModel::check2FAStatus($uid, CIInput()->post("_core_one_code"));
         if ($rsdb["with_2fa"] == 0 && CIInput()->post("with_2fa") > 0 && $resultStatus2fa === false) {
             $json["msg"] = "2fa code is niet juist!";
             $json["status"] = "error";

@@ -8,7 +8,7 @@
                 </div>
                 <div class="col-3">
                     <label>Is actief</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <?= select_boolean("is_active", 2, true) ?>
                     </div>
                 </div>
@@ -77,12 +77,7 @@
     $('.addmodule').click(function() {
         let modulepath = $(this).data('search_data');
         let button = $(this);
-        let data = {
-            path: modulepath,
-            [csrf_token_name]: csrf_hash
-        };
-        let submit_button_text = button.html();
-        loadPermissionsort(button, data, submit_button_text, 'add/back');
+        loadPermissionsort(button, modulepath);
         $("tbody#itemContainerTodo tr#" + modulepath + "").fadeOut('slow', function() {
             $(this).remove();
             let countnow = $("span#totalcountTodo").text();
@@ -91,27 +86,63 @@
         });
     });
 
-    function loadPermissionsort(button, data, submit_button_text, type = '') {
-        $.ajax({
-            url: site_url + 'back/Module/' + type,
-            type: 'POST',
-            dataType: 'json',
-            data: data,
-            beforeSend: function() {
-                button.html('<i class="fa fa-fw fa-spinner fa-pulse"></i> ');
+    function loadPermissionsort(submit_button, modulepath) {
+        let submit_button_text = submit_button.html();
+        submit_button.attr("disabled", "disabled");
+        submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
+
+        let formData = new FormData();
+        formData.set([csrf_token_name], csrf_hash);
+        formData.set('modulepath', modulepath);
+
+        myfetch({
+                method: 'POST',
+                body: formData
+            }, site_url + 'back/Module/add').then(json => {
+                if (json.status != 'good') {
+                    handle_info_box(json.status, json.msg);
+                    return;
+                }
+                return confirmSql(formData, json).then(moduleJson => {
+                    formData.delete('confirm_sql[]');
+                    return myfetch({
+                        method: 'POST',
+                        body: formData
+                    }, site_url + 'back/Module/add/api').then(json => {
+                        // The first call holds the table changes, show that message unless the api call failed
+                        handle_info_box(json.status, json.status == 'good' ? moduleJson.msg : json.msg);
+                    });
+                });
+            })
+            .finally(() => {
+                submit_button.html(submit_button_text);
+                submit_button.removeAttr("disabled");
+            });
+    }
+
+    // ENGINE changes and columns or indexes that are no longer in the sql files are only applied after confirmation
+    function confirmSql(formData, json) {
+        if (!json.confirm || json.confirm.length === 0) {
+            return Promise.resolve(json);
+        }
+        let list = json.confirm.map(item => $('<div>').text(item.sql).html()).join('<br>');
+        return Swal.fire({
+            title: 'Bevestig uw keuze',
+            icon: 'warning',
+            html: 'Deze wijzigingen uitvoeren? Bij DROP gaat de data verloren, bij ENGINE wordt de tabel opnieuw opgebouwd.<br><br><small class="text-start d-block">' + list + '</small>',
+            showCancelButton: true,
+            cancelButtonText: "Nee",
+            confirmButtonText: "Ja, uitvoeren"
+        }).then((result) => {
+            if (!result.value) {
+                json.msg += '<br>' + json.confirm.length + ' wijziging(en) niet uitgevoerd.';
+                return json;
             }
-        }).done(function(json) {
-            if (type == 'add/back') {
-                loadPermissionsort(button, data, submit_button_text, 'add/api')
-            }
-            if (type == 'update/back') {
-                loadPermissionsort(button, data, submit_button_text, 'update/api')
-            }
-            handle_info_box(json.status, json.msg);
-        }).fail(function(jqxhr) {
-            message_ajax_fail_show(jqxhr);
-        }).always(function() {
-            button.html(submit_button_text);
+            json.confirm.forEach(item => formData.append('confirm_sql[]', item.key));
+            return myfetch({
+                method: 'POST',
+                body: formData
+            }, site_url + 'back/Module/add');
         });
     }
 </script>

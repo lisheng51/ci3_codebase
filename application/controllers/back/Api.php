@@ -21,7 +21,7 @@ class Api extends Back_Controller
     public function del()
     {
         $id = CIInput()->post("del_id");
-        if (empty($id) === true) {
+        if (empty($id)) {
             redirect($this->controller_url);
         }
         $rsdb = ApiModel::getOneById($id);
@@ -47,7 +47,7 @@ class Api extends Back_Controller
         }
 
         $rsdb = ApiModel::getOneById(intval($id));
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             redirect($this->controller_url);
         }
 
@@ -109,7 +109,7 @@ class Api extends Back_Controller
     {
         $id = CIInput()->post("editid") ?? 0;
         $rsdb = ApiModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . ' is niet gevonden!';
             $json["status"] = "error";
             exit(json_encode($json));
@@ -118,7 +118,7 @@ class Api extends Back_Controller
         $field = CIInput()->post("field") ?? "";
         $fieldvalue = CIInput()->post("fieldvalue") ?? "";
 
-        if (empty($field) === true) {
+        if (empty($field)) {
             $json["msg"] = $this->title_module . ' is niet bijgewerkt!';
             $json["status"] = "error";
             exit(json_encode($json));
@@ -145,12 +145,7 @@ class Api extends Back_Controller
 
     private function getData()
     {
-        $page_limit = CIInput()->post("page_limit");
-        $limit = empty($page_limit) ? c_key('webapp_default_show_per_page') : $page_limit;
-
-        $page_number = CIInput()->get("page_number");
-        $page = empty($page_number) ? 0 : ($page_number * $limit) - $limit;
-
+        list($limit, $page) = GlobalModel::limitAndPage();
         $arr_result = [];
         $listdb = ApiModel::getList($limit, $page);
         foreach ($listdb as $rs) {
@@ -250,11 +245,11 @@ class Api extends Back_Controller
 
         $reportrange_end = CIInput()->post("reportrange_end") ?? loadPostGet('reportrange_end');
         $reportrange_start = CIInput()->post("reportrange_start") ?? loadPostGet('reportrange_start');
-        if (empty($reportrange_start) === false && empty($reportrange_end) === true) {
+        if (empty($reportrange_start) === false && empty($reportrange_end)) {
             $data_where[] = [ApiLogModel::$table . ".datetime >=" => date_format(date_create(trim($reportrange_start)), 'Y-m-d H:i:s')];
         }
 
-        if (empty($reportrange_end) === false && empty($reportrange_start) === true) {
+        if (empty($reportrange_end) === false && empty($reportrange_start)) {
             $data_where[] = [ApiLogModel::$table . ".datetime <=" => date_format(date_create(trim($reportrange_end)), 'Y-m-d H:i:s')];
         }
 
@@ -281,10 +276,7 @@ class Api extends Back_Controller
 
     private function log_list()
     {
-        $page_limit = CIInput()->post("page_limit");
-        $limit = empty($page_limit) ? c_key('webapp_default_show_per_page') : $page_limit;
-        $page_number = CIInput()->get("page_number");
-        $page = empty($page_number) ? 0 : ($page_number * $limit) - $limit;
+        list($limit, $page) = GlobalModel::limitAndPage();
         return ApiLogModel::getList($limit, $page);
         //        $listdb = ApiLogModel::get_list($limit, $page);
         //        $arr_result = [];

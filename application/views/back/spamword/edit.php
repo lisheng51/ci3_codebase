@@ -4,7 +4,7 @@
         <form method="POST" id="send">
             <div class="row">
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Woord*</label>
                         <input type="text" class="form-control" name="word" required value="<?= $rsdb["word"] ?? ""; ?>" />
                     </div>
@@ -12,7 +12,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="hidden" name="<?= SpamwordModel::$primaryKey ?>" value="<?= $rsdb[SpamwordModel::$primaryKey] ?? 0; ?>" />
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button($rsdb) ?>

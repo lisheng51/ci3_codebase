@@ -17,18 +17,88 @@ class MailConfigModel
         ];
     }
 
+    public static function getAzureProvider(array $mailConfig): PHPMailer\PHPMailer\OAuth
+    {
+        $clientId = $mailConfig["client_id"];
+        $clientSecret = $mailConfig["client_secret"];
+        $tenantId =  $mailConfig["tenant_id"];
+        $refreshToken = $mailConfig["refresh_token"];
+
+        $provider = new Greew\OAuth2\Client\Provider\Azure(
+            [
+                'clientId' => $clientId,
+                'clientSecret' => $clientSecret,
+                'tenantId' => $tenantId,
+            ]
+        );
+
+        return new \PHPMailer\PHPMailer\OAuth(
+            [
+                'provider' => $provider,
+                'clientId' => $clientId,
+                'clientSecret' => $clientSecret,
+                'refreshToken' => $refreshToken,
+                'userName' => $mailConfig["Username"]
+            ]
+        );
+    }
+
+    public static function getToken(array $mailConfig, string $scope = 'https://outlook.office.com/SMTP.Send offline_access', bool $getAccessToken = false): string
+    {
+        $clientId = $mailConfig["client_id"];
+        $clientSecret = $mailConfig["client_secret"];
+        $name = $mailConfig["user"];
+        $tenantId =  $mailConfig["tenant_id"];
+        $refreshToken = $mailConfig["refresh_token"];
+
+        $url = 'https://login.microsoftonline.com/' . $tenantId . '/oauth2/v2.0/token';
+        $params = [
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'scope' => $scope,
+            'refresh_token' => $refreshToken,
+            'grant_type' => 'refresh_token'
+        ];
+        $response = get_curl($url, $params);
+        $jsonResponse = json_decode($response);
+        if ($getAccessToken && isset($jsonResponse->access_token)) {
+            return $jsonResponse->access_token;
+        }
+        if (!$getAccessToken && isset($jsonResponse->refresh_token)) {
+            return $jsonResponse->refresh_token;
+        }
+        TelegramModel::log(__METHOD__ . '=>' . $name . PHP_EOL . $response);
+        return "";
+    }
+
+    public static function getGraphAccessToken(array $mailConfig): string
+    {
+        $client = new GuzzleHttp\Client();
+        $response = $client->post('https://login.microsoftonline.com/' . $mailConfig["tenant_id"] . '/oauth2/v2.0/token', [
+            'form_params' => [
+                'client_id' => $mailConfig["client_id"],
+                'client_secret' => $mailConfig["client_secret"],
+                'scope' => 'https://graph.microsoft.com/.default',
+                'grant_type' => 'client_credentials',
+            ],
+        ]);
+
+        $tokenData = json_decode($response->getBody());
+        return $tokenData->access_token ?? '';
+    }
+
     public static function sendMailData(string $from_email = "")
     {
-        $result["Host"] = c_key('webapp_smtp_host');
-        $result["Username"] = c_key('webapp_smtp_user');
-        $result["Password"] = GlobalModel::decryptData(c_key('webapp_smtp_pass'));
-        $result["SMTPSecure"] = c_key('webapp_smtp_crypto');
-        $result["Port"] = (int) c_key('webapp_smtp_port');
-        $result["Name"] = c_key('webapp_smtp_user_name');
-        $result["client_id"] = c_key('webapp_smtp_client_id');
-        $result["client_secret"] = c_key('webapp_smtp_client_secret');
-        $result["tenant_id"] = c_key('webapp_smtp_tenant_id');
-        $result["refresh_token"] = c_key('webapp_smtp_user_refresh_token');
+        $result["Host"] = c_key('_core_smtp_host');
+        $result["Username"] = c_key('_core_smtp_user');
+        $result["Password"] = GlobalModel::decryptData(c_key('_core_smtp_pass'));
+        $result["SMTPSecure"] = c_key('_core_smtp_crypto');
+        $result["Port"] = (int) c_key('_core_smtp_port');
+        $result["Name"] = c_key('_core_smtp_user_name');
+        $result["client_id"] = c_key('_core_smtp_client_id');
+        $result["client_secret"] = c_key('_core_smtp_client_secret');
+        $result["tenant_id"] = c_key('_core_smtp_tenant_id');
+        $result["refresh_token"] = c_key('_core_smtp_user_refresh_token');
 
         if (!empty($from_email)) {
             $mailConfig = self::getOneByField('user', $from_email);
@@ -81,8 +151,8 @@ class MailConfigModel
         self::$sqlOrderBy = ['name' => 'asc'];
         $listdb = self::getAll();
         $select_name = !empty($name) ? $name : self::$primaryKey;
-        $select = '<select name="' . $select_name . '" class="form-control">';
-        $emptyOptionText = c_key('webapp_smtp_user_name') . ' (' . c_key('webapp_smtp_user') . ')';
+        $select = '<select name="' . $select_name . '" class="form-select">';
+        $emptyOptionText = c_key('_core_smtp_user_name') . ' (' . c_key('_core_smtp_user') . ')';
         $select .= $with_empty === true ? '<option value="" >' . $emptyOptionText . '</option>' : '';
         foreach ($listdb as $rs) {
             $ckk = $user == $rs['user'] ? "selected" : '';
@@ -106,9 +176,9 @@ class MailConfigModel
         self::$sqlWhere = array_merge($where, $dataWhere);
         self::$sqlOrderBy = ['name' => 'asc'];
         $listdb = self::getAll();
-        $emptyOptionText = c_key('webapp_smtp_user_name') . ' (' . c_key('webapp_smtp_user') . ')';
-        $select = '<select name="' . $select_name . '[]" class="form-control" multiple>';
-        $select .= '<option value="' . c_key('webapp_smtp_user') . '" >' . $emptyOptionText . '</option>';
+        $emptyOptionText = c_key('_core_smtp_user_name') . ' (' . c_key('_core_smtp_user') . ')';
+        $select = '<select name="' . $select_name . '[]" class="form-select" multiple>';
+        $select .= '<option value="' . c_key('_core_smtp_user') . '" >' . $emptyOptionText . '</option>';
         foreach ($listdb as $rs) {
             $ckk = (empty($haystack) === false && in_array($rs['user'], $haystack)) ? 'selected' : '';
             $optionText = $rs["name"] . ' (' . $rs["user"] . ')';

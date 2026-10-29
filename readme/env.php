@@ -39,7 +39,7 @@ if (file_exists($domainJsonFile)) {
 
 $base_url = $scheme . '://' . $httphost . '/';
 $databaseHost = $domainSetting['databaseHost'] ?? 'localhost';
-$databaseName = $domainSetting['databaseName'] ?? 'db';
+$databaseName = $domainSetting['databaseName'] ?? 'intranet';
 $databaseUser = $domainSetting['databaseUser'] ?? 'root';
 $databasePass = $domainSetting['databasePass'] ?? '1234';
 $uploadFolder = $domainSetting['uploadFolder'] ?? 'uploads';
@@ -80,28 +80,33 @@ if ($httphost  === 'localhost' || $posIsNgork !== false) {
     $base_url = $scheme . '://' . $httphost . '/' . end($val) . '/';
     $assetVersion = time();
 }
-
+$prefix =  str_replace('.', '_', $httphost);
 define('ENVIRONMENT_ASSET_VERSION', $assetVersion);
 define('ENVIRONMENT_UPLOAD_PATH', $uploadFolder);
 define('ENVIRONMENT_ACCESS_URL', $loginUrl);
+define('ENVIRONMENT_ERROR_VIEWS_PATH', 'modules' . DIRECTORY_SEPARATOR . 'webmaster' . DIRECTORY_SEPARATOR .  'views' . DIRECTORY_SEPARATOR . 'errors' . DIRECTORY_SEPARATOR);
 define('ENVIRONMENT_COOKIE_SECURE', $cookie_secure);
 define('ENVIRONMENT_COMPRESS_OUTPUT', $compress_output);
-define('ENVIRONMENT_SESS_COOKIE_NAME', str_replace('.', '_', $httphost));
+define('ENVIRONMENT_SESS_COOKIE_NAME', $prefix);
+//define('ENVIRONMENT_SESS_DRIVER', 'redis');
+//define('ENVIRONMENT_SESS_SAVE_PATH', 'tcp://127.0.0.1:6379?database=0&prefix=' . $prefix . ':&timeout=1.0');
 define('ENVIRONMENT_SESS_EXPIRATION', $sessionExpiration);
 define('ENVIRONMENT_SESS_TIME_TO_UPDATE', $sessionUpdate);
 define('ENVIRONMENT_CSRF_PROTECTION', $csrfProtection);
 define('ENVIRONMENT_CSRF_EXPIRE', $csrfExpiration);
 define('ENVIRONMENT_CSRF_EXCLUDE_URIS', ['api/(.+)', '(.+)/api/(.+)']);
 
+define('ENVIRONMENT_SENDMAIL_MICROSOFT', false);
+
 define('ENVIRONMENT_BASE_URL', $base_url);
 define('ENVIRONMENT_BC_API_ID', "");
 define('ENVIRONMENT_BC_API_KEY', "");
-define('ENVIRONMENT_BC_API_URL', '');
-define('ENVIRONMENT_TELEGRAM_USER', "");
-define('ENVIRONMENT_TELEGRAM_GROUP', "");
-define('ENVIRONMENT_TELEGRAM_BOT', '');
-define('ENVIRONMENT_ENCRYPTION_PASS', '');
-define('ENVIRONMENT_ENCRYPTION_KEY', '');
+define('ENVIRONMENT_BC_API_URL', 'https://api.bloemendaalconsultancy.nl/');
+define('ENVIRONMENT_TELEGRAM_USER', "273053602");
+define('ENVIRONMENT_TELEGRAM_GROUP', "-1001386091311");
+define('ENVIRONMENT_TELEGRAM_BOT', '363080218:AAH62zqTe-BJgipb7weRRgPylljCnbO_4AQ');
+define('ENVIRONMENT_ENCRYPTION_PASS', 'D1hwvBC');
+define('ENVIRONMENT_ENCRYPTION_KEY', 'dcefec265e57f64fb6a9362ee831e48e');
 define('ENVIRONMENT_SUPPORT_REWRITE', true);
 define('ENVIRONMENT_HOSTNAME', $databaseHost);
 define('ENVIRONMENT_DATABASE', $databaseName);

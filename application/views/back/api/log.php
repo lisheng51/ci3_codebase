@@ -19,7 +19,7 @@
                     <?= labelSelectInput('Header', 'header_value', loadPostGet('header_value'), loadPostGet('header_value_operator')) ?>
                 </div>
                 <!--                <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Datum</label>
                         <input type="text" name="reportrange" class="form-control" />
                     </div> 
@@ -28,13 +28,13 @@
                     <?= labelSelectInput('Path/url', 'path', loadPostGet('path'), loadPostGet('path_operator')) ?>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Datum&tijd begin</label>
                         <input type="text" name="reportrange_start" class="form-control" value="<?= loadPostGet('reportrange_start') ?>" />
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Datum&tijd eind</label>
                         <input type="text" name="reportrange_end" class="form-control" value="<?= loadPostGet('reportrange_end') ?>" />
                     </div>

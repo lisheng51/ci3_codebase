@@ -1,1 +1,1 @@
-<a class="float-right btn btn-dark" href="<?= $url ?>"><?= $text ?></a>
+<a class="float-end btn btn-dark" href="<?= $url ?>"><?= $text ?></a>

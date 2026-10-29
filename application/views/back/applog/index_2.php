@@ -37,7 +37,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Details</div>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -46,35 +46,35 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>Log ID:</label>
                                             <span id="Modal_view_detail_id"></span>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>Datum & Tijd:</label>
                                             <span id="Modal_view_detail_date"></span>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>Naam:</label>
                                             <span id="Modal_view_detail_display_info"></span>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>Beschrijving:</label>
                                             <span id="Modal_view_detail_description"></span>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>Path/url:</label>
                                             <span id="Modal_view_detail_url"></span>
                                         </div>
@@ -86,7 +86,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal">Gezien</button>
+                <button type="button" class="btn btn-info" data-bs-dismiss="modal">Gezien</button>
             </div>
         </div>
     </div>
@@ -106,26 +106,20 @@
             confirmButtonText: "Ja"
         }).then((result) => {
             if (result.value) {
-                var senddata = {
-                    del_id: del_id,
-                    [csrf_token_name]: csrf_hash
-                };
-                $.ajax({
-                    url: del_url,
-                    data: senddata,
-                    type: 'POST',
-                    dataType: 'json'
-                }).done(function(json) {
+                let formData = new FormData();
+                formData.set([csrf_token_name], csrf_hash);
+                formData.set('del_id', del_id);
+
+                myfetch({
+                    method: 'POST',
+                    body: formData
+                }).then(json => {
                     if (json.status === 'good') {
                         $("#" + del_id + "").fadeOut('slow', function() {
                             $(this).remove();
                         });
                     }
                     handle_info_box(json.status, json.msg);
-                }).always(function() {
-
-                }).fail(function(jqxhr) {
-                    message_ajax_fail_show(jqxhr);
                 });
             }
         });
@@ -209,28 +203,4 @@
         }
     });
     $('.dataTables_filter').hide();
-    $('#Modal_view_detail_app_log').on('show.bs.modal', function(e) {
-        var url = $(e.relatedTarget).data('view_link');
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            beforeSend: function() {
-                $(e.relatedTarget).html('<i class="fa fa-spinner fa-pulse"></i> ');
-                $('span#Modal_view_detail_id').html('<i class="fa fa-spinner fa-pulse"></i> ');
-                $('span#Modal_view_detail_date').html('<i class="fa fa-spinner fa-pulse"></i> ');
-                $('span#Modal_view_detail_display_info').html('<i class="fa fa-spinner fa-pulse"></i> ');
-                $('span#Modal_view_detail_description').html('<i class="fa fa-spinner fa-pulse"></i> ');
-                $('span#Modal_view_detail_url').html('<i class="fa fa-spinner fa-pulse"></i> ');
-            }
-        }).done(function(json) {
-            $('span#Modal_view_detail_id').text(json.log_id);
-            $('span#Modal_view_detail_date').text(json.date);
-            $('span#Modal_view_detail_display_info').text(json.display_info);
-            $('span#Modal_view_detail_description').text(json.description);
-            $('span#Modal_view_detail_url').text(json.path);
-            $(e.relatedTarget).html('<i class="fa fa-eye fa-fw"></i> ');
-        }).fail(function(jqxhr) {
-            message_ajax_fail_show(jqxhr);
-        });
-    });
 </script>

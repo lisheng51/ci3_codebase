@@ -17,7 +17,7 @@ class AccessCheckModel
         $out = '';
         if (!empty(CIRouter()->module) && CIRouter()->module !== $defaultpath) {
             $modulesName = CIRouter()->module;
-            $ck_file_exist_path = FCPATH. 'modules' . DIRECTORY_SEPARATOR . $modulesName . DIRECTORY_SEPARATOR . $filename;
+            $ck_file_exist_path = MODULESPATH . $modulesName . DIRECTORY_SEPARATOR . $filename;
         }
 
         if (file_exists($ck_file_exist_path)) {
@@ -73,12 +73,12 @@ class AccessCheckModel
         $defaultCk1 = APPPATH . 'views' . DIRECTORY_SEPARATOR . $defaultpath;
         if (!empty(CIRouter()->module) && CIRouter()->module !== $defaultpath) {
             $modulesName = CIRouter()->module;
-            $defaultCk1 = FCPATH. 'modules' . DIRECTORY_SEPARATOR . $modulesName . 'views' . DIRECTORY_SEPARATOR . $defaultpath;
+            $defaultCk1 = MODULESPATH . $modulesName . 'views' . DIRECTORY_SEPARATOR . $defaultpath;
         }
 
         if ($defaultpath !== self::$backPath) {
             $modulesName = CIRouter()->module;
-            $defaultCk1 = FCPATH. 'modules' . DIRECTORY_SEPARATOR . $modulesName . 'views' . DIRECTORY_SEPARATOR . self::$backPath . DIRECTORY_SEPARATOR . $controller . DIRECTORY_SEPARATOR . $view_path_name . DIRECTORY_SEPARATOR . "$filename.php";
+            $defaultCk1 = MODULESPATH . $modulesName . 'views' . DIRECTORY_SEPARATOR . self::$backPath . DIRECTORY_SEPARATOR . $controller . DIRECTORY_SEPARATOR . $view_path_name . DIRECTORY_SEPARATOR . "$filename.php";
             if (file_exists($defaultCk1)) {
                 return "$controller/$view_path_name/$filename";
             }
@@ -140,7 +140,7 @@ class AccessCheckModel
         }
 
         CILoader()->database();
-        $domainRedirect = c_key('webapp_domain_redirect') ?? "";
+        $domainRedirect = c_key('_core_domain_redirect') ?? "";
         if (!empty($domainRedirect)) {
             $domeinList = explode(',', $domainRedirect);
             if (!empty($domeinList)) {
@@ -154,7 +154,7 @@ class AccessCheckModel
             }
         }
 
-        $defaultRedirect = c_key('webapp_default_url') ?? "";
+        $defaultRedirect = c_key('_core_default_url') ?? "";
         if (!empty($defaultRedirect)) {
             redirect($defaultRedirect);
         }

@@ -53,7 +53,7 @@ class File extends Back_Controller
             redirect($this->controller_url);
         }
         $rsdb = UploadModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . ' is niet gevonden!';
             $json["status"] = "error";
             exit(json_encode($json));
@@ -80,7 +80,7 @@ class File extends Back_Controller
         }
 
         $rsdb = UploadModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             redirect($this->controller_url);
         }
 
@@ -136,12 +136,7 @@ class File extends Back_Controller
 
     private function getData()
     {
-        $page_limit = CIInput()->post("page_limit");
-        $limit = empty($page_limit) ? c_key('webapp_default_show_per_page') : $page_limit;
-
-        $page_number = CIInput()->get("page_number");
-        $page = empty($page_number) ? 0 : ($page_number * $limit) - $limit;
-
+        list($limit, $page) = GlobalModel::limitAndPage();
         $arr_result = [];
         $listdb = UploadModel::getList($limit, $page);
         foreach ($listdb as $rs) {

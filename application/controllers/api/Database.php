@@ -51,10 +51,7 @@ class Database extends MX_Controller
 
     private function fetchList($table, $onlytoday = 'n')
     {
-        $page_limit = CIInput()->get("limit");
-        $limit = empty($page_limit) ? c_key('webapp_default_show_per_page') : $page_limit;
-        $page_number = CIInput()->get("page");
-        $page = empty($page_number) ? 0 : ($page_number * $limit) - $limit;
+        list($limit, $page) = GlobalModel::limitAndPage();
         $query = $this->db->get($table, $limit, $page);
         if ($onlytoday === 'y') {
             $query = $this->db->where('DATE(`created_at`)', 'CURDATE()', false)->get($table, $limit, $page);

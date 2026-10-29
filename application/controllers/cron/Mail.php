@@ -14,7 +14,7 @@ class Mail extends Cron_Controller
 
         $status = file_get_contents($ck_file_exist_path);
         if ($status !== 'klaar') {
-            TelegramModel::log(__METHOD__ . PHP_EOL . 'Overlapping');
+            TelegramModel::log(__METHOD__ . PHP_EOL . $status);
             exit;
         }
 
@@ -38,41 +38,16 @@ class Mail extends Cron_Controller
         }
     }
 
-    private function getToken(array $mailConfig = [])
-    {
-        $clientId = $mailConfig["client_id"];
-        $clientSecret = $mailConfig["client_secret"];
-        $name = $mailConfig["user"];
-        $tenantId =  $mailConfig["tenant_id"];
-        $refreshToken = $mailConfig["refresh_token"];
-
-        $url = 'https://login.microsoftonline.com/' . $tenantId . '/oauth2/v2.0/token';
-        $params = [
-            'client_id' => $clientId,
-            'client_secret' => $clientSecret,
-            'scope' => 'https://outlook.office.com/SMTP.Send offline_access',
-            'refresh_token' => $refreshToken,
-            'grant_type' => 'refresh_token'
-        ];
-        $response = get_curl($url, $params);
-        $jsonResponse = json_decode($response);
-        if (isset($jsonResponse->refresh_token)) {
-            return $jsonResponse->refresh_token;
-        }
-        TelegramModel::log(__METHOD__ . ' gaat mis bij ' . $name);
-        return "";
-    }
-
     public function refresh_token()
     {
-        $result["user"] = c_key('webapp_smtp_user');
-        $result["client_id"] = c_key('webapp_smtp_client_id');
-        $result["client_secret"] = c_key('webapp_smtp_client_secret');
-        $result["tenant_id"] = c_key('webapp_smtp_tenant_id');
-        $result["refresh_token"] = c_key('webapp_smtp_user_refresh_token');
-        $newToken = $this->getToken($result);
+        $result["user"] = c_key('_core_smtp_user');
+        $result["client_id"] = c_key('_core_smtp_client_id');
+        $result["client_secret"] = c_key('_core_smtp_client_secret');
+        $result["tenant_id"] = c_key('_core_smtp_tenant_id');
+        $result["refresh_token"] = c_key('_core_smtp_user_refresh_token');
 
-        if (!empty($newToken)) {
+        if (!empty($result["refresh_token"])) {
+            $newToken = MailConfigModel::getToken($result);
             ConfigModel::updateOne($newToken);
         }
 
@@ -82,7 +57,7 @@ class Mail extends Cron_Controller
                 if (empty($rsdb['refresh_token'])) {
                     continue;
                 }
-                $newToken = $this->getToken($rsdb);
+                $newToken = MailConfigModel::getToken($rsdb);
                 if (!empty($newToken)) {
                     MailConfigModel::edit($rsdb[MailConfigModel::$primaryKey], ['refresh_token' => $newToken]);
                 }

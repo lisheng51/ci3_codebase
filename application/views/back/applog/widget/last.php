@@ -8,7 +8,7 @@
     <title><?= $title ?></title>
     <?php
     echo F_asset::fontawesome();
-    echo F_asset::axios() . F_asset::jquery();
+    echo F_asset::jquery();
     echo F_asset::bootstrap();
     ?>
 </head>

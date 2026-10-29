@@ -1,5 +1,9 @@
 RewriteEngine On
 
+# pass the Authorization header to PHP (Buckaroo push signature), Apache/PHP-FPM drop it by default
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 <Files domain.json>
         order allow,deny
         deny from all

@@ -37,7 +37,7 @@ class BreadcrumbModel
         $defaultCk = APPPATH . 'views' . DIRECTORY_SEPARATOR . $viewPath . '.php';
         if (empty(CIRouter()->module) === false) {
             $modulesName = CIRouter()->module;
-            $defaultCk = FCPATH. 'modules' . DIRECTORY_SEPARATOR . $modulesName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $viewPath . '.php';
+            $defaultCk = MODULESPATH . $modulesName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $viewPath . '.php';
             if (file_exists($defaultCk) === false) {
                 $defaultCk = APPPATH . 'views' . DIRECTORY_SEPARATOR . $viewPath . '.php';
             }

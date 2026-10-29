@@ -6,7 +6,7 @@
                 <form id="form_search">
                     <div class="row">
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Module</label>
                                 <?= $selectModule ?>
                             </div> 
