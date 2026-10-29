@@ -44,8 +44,11 @@ class ArticleModel
         $tem_key = "is_view_article_" . $rsdb[self::$primaryKey];
         $session = CISession()->tempdata($tem_key);
         if (empty($session) === TRUE) {
-            $data["hits"] = $rsdb["hits"] + 1;
-            self::edit($rsdb[self::$primaryKey], $data);
+            // niet via edit(): dat zet modifiedby, en modified_at moet blijven staan (ON UPDATE)
+            CIDb()->set('hits', 'hits + 1', false);
+            CIDb()->set('modified_at', 'modified_at', false);
+            CIDb()->where(self::$primaryKey, $rsdb[self::$primaryKey]);
+            CIDb()->update(self::$table);
             CISession()->set_tempdata($tem_key, CIInput()->ip_address(), 60);
         }
 
