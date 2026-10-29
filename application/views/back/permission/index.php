@@ -2,7 +2,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header"><?= lang('search_box_header_text') ?>
-                <div class="float-right"><?= addButton($controller_url . '.add', $controller_url . '/add') ?></div>
+                <div class="float-end"><?= addButton($controller_url . '.add', $controller_url . '/add') ?></div>
             </div>
             <div class="card-body">
                 <form method="POST" id="form_search">
@@ -12,7 +12,7 @@
                         </div>
                         <div class="col-2">
                             <label>Path</label>
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <?= PermissionGroupTypeModel::selectPath("", true) ?>
                             </div>
                         </div>

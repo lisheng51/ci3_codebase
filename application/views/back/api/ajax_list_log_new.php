@@ -15,7 +15,7 @@
                 <tbody id="itemContainer">
                     <?php foreach ($listdb as $value) : ?>
                         <tr>
-                            <td><button class="btn btn-info btn-sm" data-toggle="collapse" data-target="#Info_<?= $value["log_id"]; ?>">Info</button> </td>
+                            <td><button class="btn btn-info btn-sm" data-bs-toggle="collapse" data-bs-target="#Info_<?= $value["log_id"]; ?>">Info</button> </td>
                             <td><?= F_datetime::convert_datetime($value["datetime"]) ?></td>
                             <td><?= $value["name"] ?></td>
                             <td><?= $value["ip_address"] ?></td>

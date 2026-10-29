@@ -9,8 +9,8 @@
                             <h4><?= $value["display_info"]; ?></h4>
                             <p><?= $value["editButton"]; ?> <?= $value["emailaddress"]; ?></p>
                             <?php foreach ($value['permissionGroupDb'] as $rs) : ?>
-                                <span class="badge badge-info"><?= $rs["name"]; ?></span>
-                                <!--                                <a href="<?= site_url($path_name . "/User/index?permission_group_id[]=" . $rs["permission_group_id"]); ?>" class="badge badge-info"><?= $rs["name"]; ?></a>-->
+                                <span class="badge text-bg-info"><?= $rs["name"]; ?></span>
+                                <!--                                <a href="<?= site_url($path_name . "/User/index?permission_group_id[]=" . $rs["permission_group_id"]); ?>" class="badge text-bg-info"><?= $rs["name"]; ?></a>-->
                             <?php endforeach; ?>
                         </div>
                     </div>

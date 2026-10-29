@@ -23,7 +23,7 @@ class AddressTypeModel
 
         $listdb = self::listDB();
         $select_name = !empty($name) ? $name : self::$primaryKey;
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $select .= $with_empty === true ? "<option value='' >------</option>" : "";
         foreach ($listdb as $rs) {
             $ckk = $id == $rs[self::$primaryKey] ? "selected" : '';
@@ -42,7 +42,7 @@ class AddressTypeModel
             }
         }
         $listdb = self::listDB();
-        $select = '<select name="' . self::$primaryKey . '[]" class="form-control" multiple>';
+        $select = '<select name="' . self::$primaryKey . '[]" class="form-select" multiple>';
         foreach ($listdb as $rs) {
             $ckk = (!empty($haystack) && in_array($rs[self::$primaryKey], $haystack)) ? 'selected' : '';
             $select .= '<option value=' . $rs[self::$primaryKey] . ' ' . $ckk . '>' . $rs["name"] . '</option>';
@@ -55,7 +55,7 @@ class AddressTypeModel
     public static function selectPath(string $path = "back", string $name = 'link_dir'): string
     {
         $listdb = self::listDB();
-        $select = '<select name=' . $name . ' class="form-control">';
+        $select = '<select name=' . $name . ' class="form-select">';
         foreach ($listdb as $rs) {
             $ckk = $path == $rs['path'] ? "selected" : '';
             $select .= '<option value=' . $rs['path'] . ' ' . $ckk . '>' . $rs["path"] . '</option>';

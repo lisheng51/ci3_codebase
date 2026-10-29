@@ -74,7 +74,6 @@ class Api extends Su_Controller
         if (curl_errno($ch)) {
             return null;
         }
-        curl_close($ch);
         if ($response === false || empty($response) === true) {
             return null;
         }

@@ -20,5 +20,5 @@
         <div class="progress-bar bg-info progress-bar-striped progress-bar-animated"></div>
     </div>
     <hr>
-    <a class="btn btn-primary btn-block" href="<?= $url ?>"><?= lang('redirect_btn_txt') ?></a>
+    <a class="btn btn-primary w-100" href="<?= $url ?>"><?= lang('redirect_btn_txt') ?></a>
 </div>

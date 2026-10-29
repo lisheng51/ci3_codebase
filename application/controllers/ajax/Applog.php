@@ -94,7 +94,7 @@ class Applog extends Ajax_Controller
             $rs["date"] = F_datetime::convert_datetime($rs["date"]);
             $rs["del_url"] = site_url($controller_url . "/del");
             $rs["view_url"] = site_url($controller_url . "/view/" . $rs["log_id"]);
-            $rs["button"] = '<button type="button" class="btn btn-info btn-sm" data-view_link="' . $rs["view_url"] . '" data-toggle="modal" data-target="#Modal_view_detail_app_log" ><i class="fas fa-eye fa-fw"></i></button> ' . '<button type="button" class="btn btn-danger btn-sm delButton" data-search_data ="' . $rs["log_id"] . '" data-del_link="' . $rs["del_url"] . '"><i class="fas fa-times fa-fw"></i></button>';
+            $rs["button"] = '<button type="button" class="btn btn-info btn-sm" data-view_link="' . $rs["view_url"] . '" data-bs-toggle="modal" data-bs-target="#Modal_view_detail_app_log" ><i class="fas fa-eye fa-fw"></i></button> ' . '<button type="button" class="btn btn-danger btn-sm delButton" data-search_data ="' . $rs["log_id"] . '" data-del_link="' . $rs["del_url"] . '"><i class="fas fa-times fa-fw"></i></button>';
             $arr_result[] = $rs;
         }
 

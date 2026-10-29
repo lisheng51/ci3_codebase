@@ -26,7 +26,7 @@ class ConfigModel
         if (isset($config[$key])) {
             $value = $config[$key];
         }
-        return '<div class="form-group"><label>' . $label . '</label><input type="' . $type . '" class="form-control" name="' . $key . '" value="' . $value . '"></div>';
+        return '<div class="mb-3"><label>' . $label . '</label><input type="' . $type . '" class="form-control" name="' . $key . '" value="' . $value . '"></div>';
     }
 
     public static function textarea(string $key = "", string $label = "", int $row = 8, array $config = [])
@@ -42,7 +42,7 @@ class ConfigModel
         if (isset($config[$key])) {
             $value = $config[$key];
         }
-        return '<div class="form-group"><label>' . $label . '</label><textarea class="form-control" rows="' . $row . '" name="' . $key . '"  >' . $value . '</textarea></div>';
+        return '<div class="mb-3"><label>' . $label . '</label><textarea class="form-control" rows="' . $row . '" name="' . $key . '"  >' . $value . '</textarea></div>';
     }
 
     public static function getAll(): array
@@ -59,15 +59,22 @@ class ConfigModel
         $listdb = self::getAll();
         $response = json_encode($listdb);
         update_cache_file($jsonFile, $response);
+        self::$cacheData = $listdb;
         return $listdb;
     }
 
+    // c_key() wordt vaak per request aangeroepen: bestand maar 1x lezen/decoden
+    private static ?array $cacheData = null;
+
     public static function fetchCache(): array
     {
+        if (self::$cacheData !== null) {
+            return self::$cacheData;
+        }
         $jsonFile = self::$table . '.json';
-        $response = get_cache_file($jsonFile);
-        if (isJSON($response)) {
-            return json_decode($response, true);
+        $data = json_decode(get_cache_file($jsonFile), true);
+        if (is_array($data)) {
+            return self::$cacheData = $data;
         }
         return self::updateCache();
     }
@@ -116,7 +123,7 @@ class ConfigModel
         return $result;
     }
 
-    public static function updateOne(string $value = '', string $key = 'webapp_smtp_user_refresh_token'): array
+    public static function updateOne(string $value = '', string $key = '_core_smtp_user_refresh_token'): array
     {
         CIDb()->set('c_value', $value);
         CIDb()->where(self::$primaryKey, $key);

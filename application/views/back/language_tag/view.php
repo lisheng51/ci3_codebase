@@ -5,7 +5,7 @@
                 <?php foreach ($listdb as $rs) : ?>
                     <div class="col-3">
                         <label><?= $rs['tag'] ?></label>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <textarea class="form-control" rows="4" name="view[<?= $rs[LanguageTagModel::$primaryKey] ?>]"><?= $rs['value'] ?></textarea>
                         </div>
                     </div>
@@ -15,7 +15,7 @@
     </div>
     <div class="row mt-3">
         <div class="col-12">
-            <div class="form-group">
+            <div class="mb-3">
                 <?= add_csrf_value(); ?>
                 <?= add_submit_button('lang') ?>
             </div>

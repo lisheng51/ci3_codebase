@@ -9,10 +9,10 @@
     <?php
     echo F_asset::favicon();
     echo F_asset::fontawesome();
-    echo F_asset::axios() . F_asset::jquery();
+    echo F_asset::jquery();
     echo F_asset::bootstrap();
     echo F_asset::sweetalert2();
-    echo script_tag(site_url("asset/index/" . $module_url));
+    echo F_asset::app($module_url);
     echo script_tag(sys_asset_url("js/function.js"));
     ?>
 </head>

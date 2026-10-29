@@ -1,7 +1,7 @@
 <ul class="navbar-nav bg-gray-900 sidebar sidebar-dark accordion hrefPermissionCk" id="accordionSidebar">
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= site_url(LoginModel::redirectUrl()) ?>">
-        <div class="sidebar-brand-text"><?= c_key('webapp_name') ?></div>
+        <div class="sidebar-brand-text"><?= c_key('_core_name') ?></div>
     </a>
     <?php
     foreach (PermissionModel::navList() as $key => $arr_menu) :
@@ -11,10 +11,10 @@
         <hr class="sidebar-divider">
         <!-- Nav Item - Pages Collapse Menu -->
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#<?= $targetName ?>_1">
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#<?= $targetName ?>_1">
                 <span><?= $path_description ?></span>
             </a>
-            <div id="<?= $targetName ?>_1" class="collapse" data-parent="#accordionSidebar">
+            <div id="<?= $targetName ?>_1" class="collapse" data-bs-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <?php foreach ($arr_menu_unique as $value) : ?>
                         <a class="collapse-item" href="<?= site_url($value["url"]) ?>"><?= $value["name"] ?></a>

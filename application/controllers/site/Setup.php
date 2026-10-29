@@ -18,27 +18,6 @@ class Setup extends Site_Controller
         $this->view_layout("index", $data);
     }
 
-    private function insertSqlFile()
-    {
-        $fileList = ModuleModel::sqlFiles();
-        foreach ($fileList as $tableName) {
-            if ($this->db->table_exists($tableName) === false) {
-                $templine = '';
-                $lines = file(APPPATH . "sql" . DIRECTORY_SEPARATOR . $tableName . '.sql');
-                foreach ($lines as $line) {
-                    if (substr($line, 0, 2) == '--' || $line == '') {
-                        continue;
-                    }
-                    $templine .= $line;
-                    if (substr(trim($line), -1, 1) == ';') {
-                        $this->db->query($templine);
-                        $templine = '';
-                    }
-                }
-            }
-        }
-    }
-
     private function indexAction()
     {
         $databasename = $this->db->database;
@@ -51,7 +30,7 @@ class Setup extends Site_Controller
                 exit(json_encode($json));
             }
         }
-        $this->insertSqlFile();
+        ModuleModel::installSql(ModuleModel::CorePath);
         $rsdb = UserModel::getOne();
         if (!empty($rsdb)) {
             $json["msg"] = "Installatie is al gedaan!";

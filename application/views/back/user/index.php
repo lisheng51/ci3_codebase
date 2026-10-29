@@ -1,6 +1,6 @@
 <form method="POST" id="form_search">
     <div class="card">
-        <div class="card-header"><?= lang('search_box_header_text') ?><div class="float-right"><?= $addButton ?></div>
+        <div class="card-header"><?= lang('search_box_header_text') ?><div class="float-end"><?= $addButton ?></div>
         </div>
         <div class="card-body">
             <div class="row">
@@ -9,7 +9,7 @@
                 </div>
                 <div class="col-2">
                     <label>Is active</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <?= select_boolean("is_active", 2, true); ?>
                     </div>
                 </div>

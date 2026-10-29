@@ -1,5 +1,6 @@
 <?php
 
+use GuzzleHttp\{Client, RequestOptions};
 use PHPMailer\PHPMailer\PHPMailer;
 
 class SendMailModel
@@ -14,6 +15,7 @@ class SendMailModel
     public static $template = "_share/sendmail/default/template";
     public static $buttonTemplate = "_share/sendmail/default/template_button";
     public static $alwaysSend = false;
+    public static $lastError = "";
 
     public static function __constructStatic()
     {
@@ -266,8 +268,8 @@ class SendMailModel
         $mailId = self::addOnly($data, $emailaddress, $attach);
         if ($mailId > 0) {
             SendMailFileModel::upload($mailId, self::$setFile);
-            $insert_data[self::$primaryKey] = $mailId;
-            $sendstatus = self::sendAction($insert_data);
+            $arr_mail = SendMailModel::getOneById(intval($mailId));
+            $sendstatus = self::sendAction($arr_mail);
             if ($sendstatus) {
                 $dataedit["is_send"] = 1;
                 $dataedit["send_date"] = date('Y-m-d H:i:s');
@@ -286,7 +288,7 @@ class SendMailModel
 
     public static function getPostdata(array $data = [], $emailaddress = null, $attach = null)
     {
-        $insert["from_email"] = empty(self::$setFromEmail) === false ? self::$setFromEmail : c_key('webapp_smtp_user');
+        $insert["from_email"] = empty(self::$setFromEmail) === false ? self::$setFromEmail : c_key('_core_smtp_user');
         $insert["to_email"] = $emailaddress;
         $insert["subject"] = stripslashes($data["title"]);
         $insert["event_value"] = time();
@@ -299,10 +301,10 @@ class SendMailModel
         $data_button["button_url"] = self::createEvent($insert, 'sys');
         $data_button["button_text"] = "Bekijk de web versie";
         $button = GlobalModel::loadView(self::$buttonTemplate, $data_button, true);
-        $message["webversion_button"] = intval(c_key('webapp_sendmail_with_webversionurl')) > 0 ? $button : "";
+        $message["webversion_button"] = intval(c_key('_core_sendmail_with_webversionurl')) > 0 ? $button : "";
 
         $image = '<img src="' .  self::createEvent($insert) . '" alt="image" style="display:none;width:0;height:0;visibility:hidden;">';
-        $message["check_open_image"] = intval(c_key('webapp_sendmail_with_check_open_img')) > 0 ? $image : "";
+        $message["check_open_image"] = intval(c_key('_core_sendmail_with_check_open_img')) > 0 ? $image : "";
 
         $insert["message"] = GlobalModel::loadView(self::$template, $message, true);
         $stringAttach = $attach;
@@ -353,8 +355,9 @@ class SendMailModel
 
     public static function sendAction(array $data = [], array $setConfig = []): bool
     {
+        self::$lastError = "";
         $from_email = "";
-        if (isset($data['from_email']) === true && empty($data['from_email']) === false) {
+        if (isset($data['from_email']) && empty($data['from_email']) === false) {
             $from_email = $data["from_email"];
         }
 
@@ -376,34 +379,15 @@ class SendMailModel
         if (!empty($setConfig)) {
             $mailConfig = $setConfig;
         }
+
+        if (defined('ENVIRONMENT_SENDMAIL_MICROSOFT') && ENVIRONMENT_SENDMAIL_MICROSOFT === true) {
+            return self::sendActionGraph($data, $mailConfig);
+        }
+
         $mail = new PHPMailer(true);
         if (!empty($mailConfig['refresh_token'])) {
             $mail->AuthType = 'XOAUTH2';
-
-            $clientId = $mailConfig["client_id"];
-            $clientSecret = $mailConfig["client_secret"];
-            $tenantId =  $mailConfig["tenant_id"];
-            $refreshToken = $mailConfig["refresh_token"];
-
-            $provider = new Greew\OAuth2\Client\Provider\Azure(
-                [
-                    'clientId' => $clientId,
-                    'clientSecret' => $clientSecret,
-                    'tenantId' => $tenantId,
-                ]
-            );
-
-            $mail->setOAuth(
-                new \PHPMailer\PHPMailer\OAuth(
-                    [
-                        'provider' => $provider,
-                        'clientId' => $clientId,
-                        'clientSecret' => $clientSecret,
-                        'refreshToken' => $refreshToken,
-                        'userName' => $from_email,
-                    ]
-                )
-            );
+            $mail->setOAuth(MailConfigModel::getAzureProvider($mailConfig));
         }
 
         try {
@@ -473,11 +457,155 @@ class SendMailModel
             }
             return true;
         } catch (\PHPMailer\PHPMailer\Exception $e) {
+            self::$lastError = strip_tags($e->errorMessage());
             log_message('error', __METHOD__ . PHP_EOL . $e->errorMessage()  . ' => ' . $from_email);
             return false;
         } catch (Exception $e) {
+            self::$lastError = $mail->ErrorInfo ?: $e->getMessage();
             log_message('error', __METHOD__ . PHP_EOL . $mail->ErrorInfo  . ' => ' . $from_email);
             return false;
+        }
+    }
+
+    private const GRAPH_SMALL_ATTACH = 3000000;
+    private const GRAPH_CHUNK = 327680 * 10;
+
+    private static function sendActionGraph(array $data, array $mailConfig): bool
+    {
+        $from_email = $data["from_email"];
+        $toRecipients = fn(array $list) => array_map(
+            fn($email, $name) => ['emailAddress' => ['address' => $email, 'name' => (string) $name]],
+            array_keys($list),
+            $list
+        );
+
+        $message = [
+            'subject' => $data["subject"],
+            'body' => ['contentType' => 'HTML', 'content' => $data["message"]],
+            'toRecipients' => [['emailAddress' => ['address' => $data["to_email"]]]],
+        ];
+
+        foreach (['replyTo' => 'reply_to_json', 'ccRecipients' => 'cc_json', 'bccRecipients' => 'bcc_json'] as $graphKey => $dataKey) {
+            $list = empty($data[$dataKey]) ? [] : json_decode($data[$dataKey], true);
+            if (!empty($list)) {
+                $message[$graphKey] = $toRecipients($list);
+            }
+        }
+
+        $attachments = [];
+        $files = SendMailFileModel::getAllByField(SendMailModel::$primaryKey, $data[SendMailModel::$primaryKey]);
+        foreach ($files as $rsdb) {
+            $content = base64_decode($rsdb["base64"]);
+            $attachments[] = ['name' => $rsdb["file_name"], 'size' => strlen($content), 'content' => $content];
+        }
+
+        if (!empty($data['attach'])) {
+            foreach (explode(",", $data['attach']) as $path) {
+                $attachments[] = ['name' => basename($path), 'size' => filesize($path), 'path' => $path];
+            }
+        }
+
+        if (ENVIRONMENT === 'development' && !self::$alwaysSend) {
+            return true;
+        }
+
+        $messageId = '';
+        $client = new Client();
+        $baseUrl = "https://graph.microsoft.com/v1.0/users/{$mailConfig['Username']}";
+        try {
+            $headers = ['Authorization' => "Bearer " . MailConfigModel::getGraphAccessToken($mailConfig)];
+            $totalSize = array_sum(array_column($attachments, 'size'));
+
+            if ($totalSize < self::GRAPH_SMALL_ATTACH) {
+                foreach ($attachments as $att) {
+                    $message['attachments'][] = self::graphFileAttachment($att);
+                }
+                $response = $client->post("$baseUrl/sendMail", [
+                    RequestOptions::HEADERS => $headers,
+                    RequestOptions::JSON => ['message' => $message, 'saveToSentItems' => true],
+                ]);
+                return $response->getStatusCode() === 202;
+            }
+
+            $draft = $client->post("$baseUrl/messages", [
+                RequestOptions::HEADERS => $headers,
+                RequestOptions::JSON => $message,
+            ]);
+            $messageId = json_decode($draft->getBody()->getContents(), true)['id'];
+
+            foreach ($attachments as $att) {
+                if ($att['size'] < self::GRAPH_SMALL_ATTACH) {
+                    $client->post("$baseUrl/messages/$messageId/attachments", [
+                        RequestOptions::HEADERS => $headers,
+                        RequestOptions::JSON => self::graphFileAttachment($att),
+                    ]);
+                    continue;
+                }
+                self::graphUploadLargeAttachment($client, $headers, "$baseUrl/messages/$messageId", $att);
+            }
+
+            $response = $client->post("$baseUrl/messages/$messageId/send", [RequestOptions::HEADERS => $headers]);
+            return $response->getStatusCode() === 202;
+        } catch (\Throwable $e) {
+            self::$lastError = $e->getMessage();
+            if ($e instanceof \GuzzleHttp\Exception\RequestException && $e->hasResponse()) {
+                self::$lastError = $e->getResponse()->getStatusCode() . ' ' . $e->getResponse()->getBody()->getContents();
+            }
+            log_message('error', __METHOD__ . PHP_EOL . self::$lastError . ' => ' . $from_email);
+
+            if ($messageId !== '') {
+                try {
+                    $client->delete("$baseUrl/messages/$messageId", [RequestOptions::HEADERS => $headers]);
+                } catch (\Throwable $e2) {
+                    log_message('error', __METHOD__ . ' delete draft: ' . $e2->getMessage());
+                }
+            }
+            return false;
+        }
+    }
+
+    private static function graphFileAttachment(array $att): array
+    {
+        $content = $att['content'] ?? file_get_contents($att['path']);
+        return [
+            '@odata.type' => '#microsoft.graph.fileAttachment',
+            'name' => $att['name'],
+            'contentBytes' => base64_encode($content),
+        ];
+    }
+
+    private static function graphUploadLargeAttachment(Client $client, array $headers, string $messageUrl, array $att): void
+    {
+        $session = $client->post("$messageUrl/attachments/createUploadSession", [
+            RequestOptions::HEADERS => $headers,
+            RequestOptions::JSON => ['AttachmentItem' => [
+                'attachmentType' => 'file',
+                'name' => $att['name'],
+                'size' => $att['size'],
+            ]],
+        ]);
+        $uploadUrl = json_decode($session->getBody()->getContents(), true)['uploadUrl'];
+
+        $handle = isset($att['content']) ? null : fopen($att['path'], 'rb');
+        try {
+            for ($start = 0; $start < $att['size']; $start += self::GRAPH_CHUNK) {
+                $length = min(self::GRAPH_CHUNK, $att['size'] - $start);
+                $chunk = $handle ? fread($handle, $length) : substr($att['content'], $start, $length);
+                $end = $start + $length - 1;
+                // uploadUrl is pre-authorized: no Authorization header here
+                $client->put($uploadUrl, [
+                    RequestOptions::HEADERS => [
+                        'Content-Length' => $length,
+                        'Content-Range' => "bytes $start-$end/{$att['size']}",
+                        'Content-Type' => 'application/octet-stream',
+                    ],
+                    RequestOptions::BODY => $chunk,
+                ]);
+            }
+        } finally {
+            if ($handle) {
+                fclose($handle);
+            }
         }
     }
 }

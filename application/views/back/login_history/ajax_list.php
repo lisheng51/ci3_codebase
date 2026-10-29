@@ -6,9 +6,9 @@
                 <thead>
                     <tr>
                         <th>
-                            <div class="custom-control custom-checkbox">
-                                <input class="custom-control-input chat_id_select_all" type="checkbox" id="chat_id_selecctall">
-                                <label class="custom-control-label font-weight-normal" for="chat_id_selecctall"><strong>Datum & Tijd</strong></label>
+                            <div class="form-check">
+                                <input class="form-check-input chat_id_select_all" type="checkbox" id="chat_id_selecctall">
+                                <label class="form-check-label fw-normal" for="chat_id_selecctall"><strong>Datum & Tijd</strong></label>
                             </div>
                         </th>
                         <th>Display</th>
@@ -23,9 +23,9 @@
                     <?php foreach ($listdb as $value) : ?>
                         <tr id="<?= $value["login_history_id"]; ?>">
                             <td>
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input chat_id_select" type="checkbox" id="log_id<?= $value['login_history_id'] ?>" name='ids[]' class="" value="<?= $value['login_history_id'] ?>">
-                                    <label class="custom-control-label font-weight-normal" for="log_id<?= $value['login_history_id'] ?>"><?= $value["date"] ?></label>
+                                <div class="form-check">
+                                    <input class="form-check-input chat_id_select" type="checkbox" id="log_id<?= $value['login_history_id'] ?>" name='ids[]' class="" value="<?= $value['login_history_id'] ?>">
+                                    <label class="form-check-label fw-normal" for="log_id<?= $value['login_history_id'] ?>"><?= $value["date"] ?></label>
                                 </div>
                             </td>
                             <td><?= $value["display_info"] ?></td>

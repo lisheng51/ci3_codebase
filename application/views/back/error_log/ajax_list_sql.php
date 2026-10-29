@@ -13,7 +13,7 @@
                 <tbody id="itemContainer">
                     <?php foreach ($listdb as $key => $value) : ?>
                         <tr>
-                            <td><button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#order_id_<?= $key; ?>"><?= $value["count"] ?></button> </td>
+                            <td><button class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#order_id_<?= $key; ?>"><?= $value["count"] ?></button> </td>
                             <td><?= $value["date"] ?></td>
                             <td>
                                 <?= $value["downloadButton"] ?>
@@ -23,17 +23,15 @@
                         <tr>
                             <td colspan="3">
                                 <ul class="list-group collapse" id="order_id_<?= $key ?>">
-                                    <?php foreach ($value['listdb'] as $jsonstring) :
-                                        $rs = json_decode($jsonstring, true);
-                                    ?>
+                                    <?php foreach ($value['listdb'] as $rs) : ?>
                                         <li class="list-group-item">
                                             <div class="row">
                                                 <div class="col-12">
                                                     <div class="card">
-                                                        <div class="card-header"><?= $rs['time'] ?? '' ?>: <?= $rs['uri'] ?? '' ?>: <?= $rs['duration'] ?? '' ?></div>
+                                                        <div class="card-header"><?= html_escape($rs['time']) ?>: <?= html_escape($rs['uri']) ?>: <?= html_escape($rs['duration']) ?></div>
                                                         <div class="card-body">
                                                             <p class="text-break">
-                                                                <?= $rs['query'] ?? '' ?>
+                                                                <?= html_escape($rs['query']) ?>
                                                             </p>
                                                         </div>
                                                     </div>

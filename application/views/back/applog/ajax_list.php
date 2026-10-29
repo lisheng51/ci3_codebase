@@ -6,9 +6,9 @@
                 <thead>
                     <tr>
                         <th>
-                            <div class="custom-control custom-checkbox">
-                                <input class="custom-control-input chat_id_select_all" type="checkbox" id="chat_id_selecctall">
-                                <label class="custom-control-label font-weight-normal" for="chat_id_selecctall"><strong>Datum & Tijd</strong></label>
+                            <div class="form-check">
+                                <input class="form-check-input chat_id_select_all" type="checkbox" id="chat_id_selecctall">
+                                <label class="form-check-label fw-normal" for="chat_id_selecctall"><strong>Datum & Tijd</strong></label>
                             </div>
                         </th>
                         <th>Gebruikersnaam</th>
@@ -21,15 +21,20 @@
                     <?php foreach ($listdb as $value) : ?>
                         <tr id="<?= $value["log_id"]; ?>">
                             <td>
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input chat_id_select" type="checkbox" id="log_id<?= $value['log_id'] ?>" name='log_id[]' class="" value="<?= $value['log_id'] ?>">
-                                    <label class="custom-control-label font-weight-normal" for="log_id<?= $value['log_id'] ?>"><?= $value["date"] ?></label>
+                                <div class="form-check">
+                                    <input class="form-check-input chat_id_select" type="checkbox" id="log_id<?= $value['log_id'] ?>" name='log_id[]' class="" value="<?= $value['log_id'] ?>">
+                                    <label class="form-check-label fw-normal" for="log_id<?= $value['log_id'] ?>"><?= $value["date"] ?></label>
                                 </div>
                             </td>
                             <td><?= $value["emailaddress"] ?></td>
                             <td><?= $value["description"] ?></td>
                             <td><?= $value["path"] ?></td>
                             <td>
+
+                                <button type="button" data-view_link="<?= $value["view_url"] ?>" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#Modal_view_detail_app_log">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+
                                 <button type="button" class="btn btn-danger btn-sm delButton" data-search_data="<?= $value["log_id"]; ?>" data-del_link="<?= $value["del_url"] ?>"><?= lang("del_icon") ?></button>
                             </td>
                         </tr>

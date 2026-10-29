@@ -1,6 +1,6 @@
 <?php
 
-$data["path"] = '_core';
+$data["path"] = ModuleModel::CorePath;
 $data["use_path"] = false;
 $data["path_description"] = '_Core';
 $data["changelog"] = [
@@ -9,50 +9,26 @@ $data["changelog"] = [
         "created_at" => "2018-01-15 15:13:54",
         "info" => [
             "API module",
+            "Config module",
+            "Taal module",
             "Module module",
             "Rechten module",
+            "Bookmark module",
+            "History module",
             "Bestand module",
-            "Logging module",
+            "App log module",
             "Account module",
             "Spamword module",
             "Bericht module",
+            "Visitor module",
+            "Mail module",
+            "Error log module",
+            "Mail config module",
             "Mail template module"
         ]
-    ], [
-        "name" => "1.1",
-        "created_at" => "2018-04-27 16:40:54",
-        "info" => [
-            "Organisatie module voor multi site",
-        ]
-    ], [
-        "name" => "1.2",
-        "created_at" => "2018-07-18 16:13:00",
-        "info" => [
-            "Helper module, vervangt de global_helper",
-        ]
-    ], [
-        "name" => "1.3",
-        "created_at" => "2019-01-02 13:13:00",
-        "info" => [
-            "Update bootstrap 3 naar 4",
-        ]
-    ], [
-        "name" => "1.4",
-        "created_at" => "2019-09-02 13:13:00",
-        "info" => [
-            "Access module, vervangt de core access path",
-        ]
-    ], [
-        "name" => "1.5",
-        "created_at" => "2019-09-22 13:13:00",
-        "info" => [
-            "Update naar Codeiniger 3.1.11",
-        ]
-    ], [
-        "name" => "1.6",
-        "created_at" => "2019-10-10 09:13:00",
-        "info" => [
-            "Error log module",
-        ]
-    ]
+    ],
+    ["name" => "1.1", "created_at" => "2020-10-10 09:13:00", "info" => ["static models"]],
+    ["name" => "1.2", "created_at" => "2021-10-10 09:13:00", "info" => ["modules folder buiten application"]],
+    ["name" => "1.3", "created_at" => "2024-11-12 09:13:00", "info" => ['trait DbCrud']],
+    ["name" => "1.4", "created_at" => "2025-04-16 11:00:00", "info" => ['webapp_=>_core_']]
 ];

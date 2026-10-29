@@ -15,7 +15,7 @@
                 <tbody id="itemContainer">
                     <?php foreach ($listdb as $value) : ?>
                         <tr id="<?= $value["mail_id"]; ?>">
-                            <td><button type="button" class="btn btn-danger btn-sm delButton" data-search_data="<?= $value["mail_id"]; ?>" data-del_link="<?= $value["del_url"] ?>"><?= lang("del_icon") ?></button> <button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#order_id_<?= $value["mail_id"]; ?>"><?= $value["send_date_view"] ?></button> </td>
+                            <td><button type="button" class="btn btn-danger btn-sm delButton" data-search_data="<?= $value["mail_id"]; ?>" data-del_link="<?= $value["del_url"] ?>"><?= lang("del_icon") ?></button> <button class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#order_id_<?= $value["mail_id"]; ?>"><?= $value["send_date_view"] ?></button> </td>
                             <td><a href="<?= $value["view_url"] ?>" target="_blank"><?= $value["subject"] ?></a></td>
                             <td><?= $value["from_email"] ?></td>
                             <td><?= $value["to_email"] ?></td>
@@ -49,55 +49,54 @@
 
 <script>
     $("button.send_mail").click(function() {
-        var id = $(this).data('search_data');
-        var button = $(this);
-        var or_text = button.html();
-        var ajaxurl = site_url + "ajax/mail/send";
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                [csrf_token_name]: csrf_hash,
-                mail_id: id,
-                type: "sys"
-            },
-            beforeSend: function() {
-                button.html('<i class="fa fa-fw fa-spinner fa-pulse"></i> ');
-            }
-        }).done(function(json) {
-            handle_info_box(json.status, json.msg);
-        }).fail(function(jqxhr) {
-            message_ajax_fail_show(jqxhr);
-        }).always(function() {
-            button.html(or_text);
-        });
+        let id = $(this).data('search_data');
+        let submit_button = $(this);
+        let submit_button_text = submit_button.html();
+        submit_button.attr("disabled", "disabled");
+        submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
+
+        let ajaxurl = site_url + "ajax/mail/send";
+
+        let formData = new FormData();
+        formData.set([csrf_token_name], csrf_hash);
+        formData.set('mail_id', id);
+        formData.set('type', 'sys');
+
+        myfetch({
+                method: 'POST',
+                body: formData
+            }, ajaxurl).then(json => {
+                handle_info_box(json.status, json.msg);
+            })
+            .finally(() => {
+                submit_button.html(submit_button_text);
+                submit_button.removeAttr("disabled");
+            });
     });
 
     $("button.view_mail").click(function() {
-        var id = $(this).data('search_data');
-        var button = $(this);
-        var or_text = button.html();
-        var ajaxurl = site_url + "ajax/mail/view";
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                [csrf_token_name]: csrf_hash,
-                mail_id: id,
-                type: "sys"
-            },
-            beforeSend: function() {
-                button.html('<i class="fa fa-fw fa-spinner fa-pulse"></i> ');
-            }
-        }).done(function(json) {
-            handle_info_box(json.status, json.msg);
-        }).fail(function(jqxhr) {
-            message_ajax_fail_show(jqxhr);
-        }).always(function() {
-            button.html(or_text);
-        });
+        let id = $(this).data('search_data');
+        let submit_button = $(this);
+        let submit_button_text = submit_button.html();
+        submit_button.attr("disabled", "disabled");
+        submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
+        let ajaxurl = site_url + "ajax/mail/view";
+
+        let formData = new FormData();
+        formData.set([csrf_token_name], csrf_hash);
+        formData.set('mail_id', id);
+        formData.set('type', 'sys');
+
+        myfetch({
+                method: 'POST',
+                body: formData
+            }, ajaxurl).then(json => {
+                handle_info_box(json.status, json.msg);
+            })
+            .finally(() => {
+                submit_button.html(submit_button_text);
+                submit_button.removeAttr("disabled");
+            });
     });
     ajax_inline_edit(site_url + 'back/Sendmail/editInline');
 </script>

@@ -22,7 +22,6 @@ function CIAgent(): CI_User_agent
 {
     $object = &load_class('User_agent');
     return $object;
-    //return CI()->agent;
 }
 
 function CIDb(): CI_DB_mysqli_driver
@@ -39,6 +38,14 @@ function CIDbUtility(): CI_DB_utility
 function CISession(): CI_Session
 {
     return CI()->session;
+}
+
+function CISessionLoaded(bool $loadnow = false): bool
+{
+    if ($loadnow) {
+        CILoader()->library('session');
+    }
+    return isset(CI()->session);
 }
 
 function CIBenchmark(): CI_Benchmark

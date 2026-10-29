@@ -3,15 +3,8 @@
 class MY_Input extends CI_Input
 {
 
-    public function __construct()
+    protected function _fetch_from_array(&$array, $index = NULL, $xss_clean = FALSE)
     {
-        parent::__construct();
-    }
-
-    protected function _fetch_from_array(&$array, $index = NULL, $xss_clean = NULL)
-    {
-        is_bool($xss_clean) or $xss_clean = $this->_enable_xss;
-
         // If $index is NULL, it means that the whole $array is requested
         isset($index) or $index = array_keys($array);
 

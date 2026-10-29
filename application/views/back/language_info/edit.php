@@ -3,7 +3,7 @@
     foreach ($ul as $key => $value) :
         $status = $key === 0 ? "active" : null;
     ?>
-        <li class="nav-item"><a class="nav-link <?= $status ?>" href="#<?= $value ?>_lang" data-toggle="tab"><?= $value ?></a></li>
+        <li class="nav-item"><a class="nav-link <?= $status ?>" href="#<?= $value ?>_lang" data-bs-toggle="tab"><?= $value ?></a></li>
     <?php endforeach; ?>
 </ul>
 
@@ -21,7 +21,7 @@
                                 <?php foreach ($data as $key => $value) : ?>
                                     <div class="col-3">
                                         <label><?= $key ?></label>
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <textarea class="form-control" rows="4" name="<?= $did . '[' . $key . ']' ?>"><?= stripslashes($value) ?></textarea>
                                         </div>
                                     </div>
@@ -37,7 +37,7 @@
     </div>
     <div class="row mt-3">
         <div class="col-12">
-            <div class="form-group">
+            <div class="mb-3">
                 <?= add_csrf_value(); ?>
                 <?= add_submit_button('config') ?>
             </div>

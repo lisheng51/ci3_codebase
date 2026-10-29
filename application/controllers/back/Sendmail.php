@@ -36,12 +36,7 @@ class Sendmail extends Back_Controller
 
     private function getList()
     {
-        $page_limit = CIInput()->post("page_limit");
-        $limit = empty($page_limit) ? c_key('webapp_default_show_per_page') : $page_limit;
-
-        $page_number = CIInput()->get("page_number");
-        $page = empty($page_number) ? 0 : ($page_number * $limit) - $limit;
-
+        list($limit, $page) = GlobalModel::limitAndPage();
         $arr_result = [];
         $listdb = SendMailModel::getList($limit, $page);
         foreach ($listdb as $rs) {
@@ -49,9 +44,9 @@ class Sendmail extends Back_Controller
             $rs["send_date_view"] = F_datetime::convert_datetime($rs["send_date"]);
             $rs["open_date_view"] = F_datetime::convert_datetime($rs["open_date"]);
             $rs["view_url"] = SendMailModel::createEvent($rs, 'sys');
-            $reply_to_json = json_decode($rs["reply_to_json"], true) ?? [];
-            $cc_json = json_decode($rs["cc_json"], true) ?? [];
-            $bcc_json = json_decode($rs["bcc_json"], true) ?? [];
+            $reply_to_json = json_decode($rs["reply_to_json"] ?? '', true) ?? [];
+            $cc_json = json_decode($rs["cc_json"] ?? '', true) ?? [];
+            $bcc_json = json_decode($rs["bcc_json"] ?? '', true) ?? [];
             $rs["attach"] = $this->showAttach($rs['attach']);
             $rs["file"] = $this->showFile($rs[SendMailModel::$primaryKey]);
             $rs["reply"] = implode(", ", array_keys($reply_to_json));
@@ -68,7 +63,7 @@ class Sendmail extends Back_Controller
     {
         $id = CIInput()->post("editid") ?? 0;
         $rsdb = SendMailModel::getOneById($id);
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = $this->title_module . ' is niet gevonden!';
             $json["status"] = "error";
             exit(json_encode($json));
@@ -143,7 +138,7 @@ class Sendmail extends Back_Controller
     {
         $id = CIInput()->post("del_id");
         $rsdb = SendMailModel::getOneById(intval($id));
-        if (empty($rsdb) === true) {
+        if (empty($rsdb)) {
             $json["msg"] = "Deze kan niet worden verwijderd!";
             $json["status"] = "error";
             exit(json_encode($json));

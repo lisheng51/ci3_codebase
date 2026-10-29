@@ -48,10 +48,7 @@ class Visitor extends Back_Controller
 
     private function getData()
     {
-        $page_limit = CIInput()->post("page_limit");
-        $limit = empty($page_limit) ? c_key('webapp_default_show_per_page') : $page_limit;
-        $page_number = CIInput()->get("page_number");
-        $page = empty($page_number) ? 0 : ($page_number * $limit) - $limit;
+        list($limit, $page) = GlobalModel::limitAndPage();
         return VisitorModel::getList($limit, $page);
     }
 }

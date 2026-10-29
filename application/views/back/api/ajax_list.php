@@ -20,7 +20,7 @@
                             <td><?= $value["name"]; ?></td>
                             <td>
                                 <?php foreach ($value['permissionGroupDb'] as $rs) : ?>
-                                    <span class="badge badge-info"><?= $rs["name"]; ?></span>
+                                    <span class="badge text-bg-info"><?= $rs["name"]; ?></span>
                                 <?php endforeach; ?>
                             </td>
                             <td class="text-center">

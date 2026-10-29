@@ -118,7 +118,7 @@ class AjaxckModel
                 return (bool) preg_match('/^[0-9]{10}$/', $value);
             case 'username':
                 return (bool) preg_match('/^[a-z0-9_-]{5,90}$/', $value);
-            case 'zipcode';
+            case 'zipcode':
                 return (bool) preg_match('/([1-9]{1}[0-9]{3})([a-zA-Z]{2})$/', $value);
             case 'date':
                 return F_datetime::validateDate($value);

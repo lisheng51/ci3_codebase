@@ -12,7 +12,7 @@ class Mpdf extends Su_Controller
         $pdf = new \Mpdf\Mpdf();
         $pdf->SetTitle($data["title"]);
         $pdf->SetHeader($data["title"] . '|{PAGENO}|' . date('d-m-Y H:i:s'));
-        $pdf->SetFooter(c_key('webapp_title') . '|{PAGENO}|' . date('d-m-Y H:i:s'));
+        $pdf->SetFooter(c_key('_core_title') . '|{PAGENO}|' . date('d-m-Y H:i:s'));
 
         $dataHeader['hostname'] = site_url();
         $pdf->WriteHTML($this->load->view($this->mpdfTemplatePath . 'first', $dataHeader, true));
@@ -70,8 +70,8 @@ class Mpdf extends Su_Controller
         $html = $this->load->view($this->mpdfTemplatePath . __FUNCTION__, $data, true);
         $pdf = new \Mpdf\Mpdf();
         $pdf->SetTitle($data["title"]);
-        $pdf->SetHeader(c_key('webapp_title') . '|{PAGENO}|' . date('d-m-Y H:i:s'));
-        $pdf->SetFooter(c_key('webapp_title') . '|{PAGENO}|' . date('d-m-Y H:i:s'));
+        $pdf->SetHeader(c_key('_core_title') . '|{PAGENO}|' . date('d-m-Y H:i:s'));
+        $pdf->SetFooter(c_key('_core_title') . '|{PAGENO}|' . date('d-m-Y H:i:s'));
         $pdf->WriteHTML($html);
         $base64 = base64_encode($pdf->Output(" ", 'S'));
         $file_content = base64_decode($base64);

@@ -5,12 +5,12 @@
             <div class="row">
                 <div class="col-12">
                     <label>JSON</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <textarea class="form-control" rows="10" required name="content"></textarea>
                     </div>
                 </div>
                 <div class="col-12">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <?= add_csrf_value(); ?>
                         <button class="btn btn-info" type="submit">Importeren</button>
                         <?= add_reset_button() ?>

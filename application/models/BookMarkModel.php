@@ -32,7 +32,7 @@ class BookMarkModel
         $data[UserModel::$primaryKey] = $userId;
         self::$sqlWhere = $data;
         $listdb = self::getAll();
-        $select = '<select name=' . $select_name . ' class="form-control">';
+        $select = '<select name=' . $select_name . ' class="form-select">';
         $select .= $with_empty ? "<option value='' >------</option>" : "";
         foreach ($listdb as $rs) {
             $ckk = $id == $rs[self::$primaryKey] ? "selected" : '';

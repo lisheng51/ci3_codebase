@@ -1,7 +1,7 @@
 $(function () {
     //handle_select();
     HrefPermissionCk("ul.hrefPermissionCk li.nav-item div.collapse a.collapse-item");
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-bs-toggle="tooltip"]').tooltip();
     setup_tinymce(".tinymce");
     handle_delete_box();
     ajax_pagination();
@@ -19,15 +19,16 @@ $(function () {
 function runUpdateSessionTime() {
     setTimeout(updateSessionTime, 1000);
     $("#sessionmaxlivetime").click(function () {
-        var submit_button = $(this);
-        $.ajax({
-            url: site_url + "ajax/Login/sessionmaxlivetime",
-            type: 'GET',
-            dataType: 'json',
-            beforeSend: function () {
-                submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
-            }
-        }).done(function (json) {
+
+        let submit_button = $(this);
+        //let submit_button_text = submit_button.html();
+        //submit_button.attr("disabled", "disabled");
+        submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
+
+        let ajaxurl = site_url + "ajax/Login/sessionmaxlivetime";
+        myfetch({
+            method: 'GET'
+        }, ajaxurl).then(json => {
             if (json.type_done) {
                 switch (json.type_done) {
                     case 'redirect':
@@ -43,10 +44,11 @@ function runUpdateSessionTime() {
                 handle_info_box(json.status, json.msg);
             }
             submit_button.html(json.timenow);
-        }).always(function () {
-        }).fail(function (jqxhr) {
-            message_ajax_fail_show(jqxhr);
-        });
+        })
+            .finally(() => {
+                //submit_button.html(submit_button_text);
+                //submit_button.removeAttr("disabled");
+            });
     });
 }
 

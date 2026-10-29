@@ -4,7 +4,7 @@
         <form method="POST" id="form_search">
             <div class="row">
                 <div class="col-md-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Datum</label>
                         <input type="text" name="reportrange" class="form-control" />
                     </div>

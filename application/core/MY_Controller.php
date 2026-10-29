@@ -304,7 +304,7 @@ class Back_Controller extends MX_Controller
 
     protected function view_layout(string $view_file = "index", array $data = [], string $layoutFileName = 'layout')
     {
-        $dataLayout["title"] = c_key('webapp_title');
+        $dataLayout["title"] = c_key('_core_title');
         $arr_no_open_message = MessageModel::getNoOpenMessage();
         $dataLayout["listdb_message"] = $arr_no_open_message["listdb"];
         $dataLayout["total_new_message"] = $arr_no_open_message["total"];
@@ -365,8 +365,10 @@ class Back_Controller extends MX_Controller
         $dataLayout['content'] = $this->view_layout_return($view_file, $data);
 
         if (ModuleModel::isActive('navbar')) {
-            $navbarContent =  file_get_contents(site_url('navbar/site/home/display/' . $this->arr_userdb[UserModel::$primaryKey]));
-            $dataLayout["navbar"] = empty($navbarContent) ? $dataLayout["navbar"] : $navbarContent;
+            $navbarContent = ModuleModel::getUrlContent('navbar/site/home/display');
+            if (!empty($navbarContent)) {
+                $dataLayout["navbar"] = $navbarContent;
+            }
         }
         $this->load->view($this->module_style . $this->path_name . '/' . AccessCheckModel::viewFile("_global", $view_path_name, $layoutFileName), $dataLayout);
     }

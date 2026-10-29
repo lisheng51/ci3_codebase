@@ -164,20 +164,12 @@ function treeSortList(pathajax = "back/Bookmark/sortList") {
                 let formkey = $(this).find('input').attr('name');
                 form_data.set(formkey, index);
             });
-            axios({
-                method: 'post',
-                url: ajaxurl,
-                data: form_data
-            }).then((response) => {
 
-            }).catch((error) => {
-                const jqxhr = error.response;
-                if (typeof jqxhr !== 'undefined') {
-                    message_ajax_fail_show(jqxhr);
-                }
-                console.log(error);
-            }).then((response) => {
-                //currentEle.data('value', newValue);
+            myfetch({
+                method: 'POST',
+                body: form_data
+            }, ajaxurl).then(json => {
+
             });
         }
     });

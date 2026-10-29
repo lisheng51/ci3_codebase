@@ -2,12 +2,9 @@
 
 class CopieTest extends Su_Controller
 {
-
-    private $url = 'https://www.bloemendaalconsultancy.nl/api/Database/copie';
-
     public function index(string $truncate = 'yes')
     {
-        $url = $this->url;
+        $url = CIInput()->get('url') ?? "";
         $tables[] = "bc_api";
         $tables[] = "bc_login";
         $tables[] = "bc_config";
@@ -31,7 +28,7 @@ class CopieTest extends Su_Controller
                     $this->db->truncate($table);
                 }
                 for ($i = 1; $i <= intval($totalcount / $pagecount) + 1; $i++) {
-                    $fields_string = http_build_query(['limit' => $pagecount, 'page' => $i]);
+                    $fields_string = http_build_query([GlobalModel::$querySegmentPageLimit => $pagecount, GlobalModel::$querySegmentPageNumber => $i]);
                     $result = get_curl($curl_url . '&' . $fields_string);
                     $listdb = json_decode($result, true);
                     $this->db->insert_batch($table, $listdb);
@@ -47,6 +44,7 @@ class CopieTest extends Su_Controller
 
     public function all($onlytoday = 'n')
     {
+        $url = CIInput()->get('url') ?? "";
         $tables = $this->db->list_tables();
         $this->benchmark->mark('code_start');
         $ckT[] = 'bc_app_log';
@@ -66,10 +64,10 @@ class CopieTest extends Su_Controller
                 'onlytoday' => $onlytoday,
                 'table' => $table,
             ]);
-            $stream = fopen($this->url . '?' . $fields_string, 'r');
+            $stream = fopen($url . '?' . $fields_string, 'r');
             $totalcount = (int) stream_get_contents($stream);
             fclose($stream);
-            $curl_url = $this->url . '/list?' . $fields_string;
+            $curl_url = $url . '/list?' . $fields_string;
             $this->insertBatch($totalcount, $curl_url, $table, $onlytoday);
         }
         $this->benchmark->mark('code_end');
@@ -90,7 +88,7 @@ class CopieTest extends Su_Controller
                 $this->db->truncate($table);
             }
             for ($i = 1; $i <= intval($totalcount / $pagecount) + 1; $i++) {
-                $fields_string = http_build_query(['limit' => $pagecount, 'page' => $i]);
+                $fields_string = http_build_query([GlobalModel::$querySegmentPageLimit => $pagecount, GlobalModel::$querySegmentPageNumber => $i]);
                 $result = get_curl($curl_url . '&' . $fields_string);
                 $listdb = json_decode($result, true);
                 $this->db->insert_batch($table, $listdb);
@@ -101,15 +99,16 @@ class CopieTest extends Su_Controller
 
     public function table($tablename = "api", string $truncate = 'yes')
     {
+        $url = CIInput()->get('url') ?? "";
         $table = 'bc_' . $tablename;
         $fields_string = http_build_query([
             'onlytoday' => 'n',
             'table' => $table
         ]);
-        $stream = fopen($this->url . '?' . $fields_string, 'r');
+        $stream = fopen($url . '?' . $fields_string, 'r');
         $totalcount = (int) stream_get_contents($stream);
         fclose($stream);
-        $curl_url = $this->url . '/list?' . $fields_string;
+        $curl_url = $url . '/list?' . $fields_string;
 
         if ($totalcount > 0) {
             $pagecount = 5000;
@@ -119,7 +118,7 @@ class CopieTest extends Su_Controller
                 $this->db->truncate($table);
             }
             for ($i = 1; $i <= intval($totalcount / $pagecount) + 1; $i++) {
-                $fields_string = http_build_query(['limit' => $pagecount, 'page' => $i]);
+                $fields_string = http_build_query([GlobalModel::$querySegmentPageLimit => $pagecount, GlobalModel::$querySegmentPageNumber => $i]);
                 $result = get_curl($curl_url . '&' . $fields_string);
                 $listdb = json_decode($result, true);
                 $this->db->insert_batch($table, $listdb);
@@ -130,10 +129,10 @@ class CopieTest extends Su_Controller
 
     public function module(string $truncate = 'yes')
     {
-        $url = CIInput()->get('url') ?? $this->url;
+        $url = CIInput()->get('url');
         $tableinput = CIInput()->get('tables');
         $tables = explode(',', $tableinput);
-        if (empty(current($tables)) === true) {
+        if (empty(current($tables))) {
             exit('no table');
         }
         ini_set('max_execution_time', 0); // for infinite time of execution 
@@ -151,7 +150,7 @@ class CopieTest extends Su_Controller
                     $this->db->truncate($table);
                 }
                 for ($i = 1; $i <= intval($totalcount / $pagecount) + 1; $i++) {
-                    $fields_string = http_build_query(['limit' => $pagecount, 'page' => $i]);
+                    $fields_string = http_build_query([GlobalModel::$querySegmentPageLimit => $pagecount, GlobalModel::$querySegmentPageNumber => $i]);
                     $result = get_curl($curl_url . '&' . $fields_string);
                     if ($result === null) {
                         continue;
@@ -170,16 +169,16 @@ class CopieTest extends Su_Controller
 
     /**
      * 
-     * @param http://localhost/intranet/su/CopieTest/database/yes.html?url=http://192.168.16.181/newbc/api/Database/copie
+     * @param http://localhost/intranet/su/CopieTest/database/yes.html?url=http://localhost/newbc/api/Database/copie
      */
     public function database(string $truncate = 'yes')
     {
-        $url = CIInput()->get('url') ?? "";
+        $url = CIInput()->get('url') ?? "";  //'https://website.com/api/Database/copie';
         $databasefrom = CIInput()->get('from') ?? 'newbc_rdw';
         $databaseto = CIInput()->get('to') ?? 'intranet_testtest';
         $this->db->db_select($databaseto);
         $tables = $this->db->list_tables();
-        if (empty(current($tables)) === true || empty($url) === true) {
+        if (empty(current($tables)) === true || empty($url)) {
             exit('parameter error');
         }
         ini_set('max_execution_time', 0); // for infinite time of execution 
@@ -188,14 +187,14 @@ class CopieTest extends Su_Controller
             $stream = fopen($url . '?' . $fields_string, 'r');
             $totalcount = (int) stream_get_contents($stream);
             fclose($stream);
-            $curl_url = $this->url . '/list?' . $fields_string;
+            $curl_url = $url  . '/list?' . $fields_string;
             if ($totalcount > 0) {
                 $pagecount = 5000;
                 if ($truncate === 'yes') {
                     $this->db->truncate($table);
                 }
                 for ($i = 1; $i <= intval($totalcount / $pagecount) + 1; $i++) {
-                    $fields_string = http_build_query(['limit' => $pagecount, 'page' => $i]);
+                    $fields_string = http_build_query([GlobalModel::$querySegmentPageLimit => $pagecount, GlobalModel::$querySegmentPageNumber => $i]);
                     $result = get_curl($curl_url . '&' . $fields_string);
                     $listdb = json_decode($result, true);
                     $this->db->insert_batch($table, $listdb);

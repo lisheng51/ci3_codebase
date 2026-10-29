@@ -17,16 +17,20 @@ function auto_geo_data(tbodyId) {
             return false;
         }
 
-        $.ajax({
-            url: site_url + "ajax/Address/data",
-            type: 'POST',
-            dataType: 'json',
-            data: { zipcode: zipcode, housenr: housenr, [csrf_token_name]: csrf_hash },
-            beforeSend: function () {
-                submit_button.prop("disabled", true);
-                submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
-            }
-        }).done(function (json) {
+        submit_button.prop("disabled", true);
+        submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
+
+        let ajaxurl = site_url + "ajax/Address/data";
+
+        let formData = new FormData();
+        formData.set([csrf_token_name], csrf_hash);
+        formData.set('zipcode', zipcode);
+        formData.set('housenr', housenr);
+
+        myfetch({
+            method: 'POST',
+            body: formData
+        }, ajaxurl).then(json => {
             if (json.status === 'error') {
                 handle_info_box(json.status, json.msg);
             } else {
@@ -34,12 +38,11 @@ function auto_geo_data(tbodyId) {
                 $("#" + tbodyId + " tr#" + reqMinId + ' input[name="' + tbodyId + '_street[]"]').val(json.street);
                 $("#" + tbodyId + " tr#" + reqMinId + ' input[name="' + tbodyId + '_province[]"]').val(json.province);
             }
-        }).always(function () {
-            submit_button.html(submit_button_text);
-            submit_button.prop("disabled", false);
-        }).fail(function (jqxhr) {
-            message_ajax_fail_show(jqxhr);
-        });
+        })
+            .finally(() => {
+                submit_button.html(submit_button_text);
+                submit_button.prop("disabled", false);
+            });
     });
 }
 

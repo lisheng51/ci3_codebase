@@ -25,16 +25,16 @@ class Token extends API_Controller
     public function access()
     {
         $apiLogId = $this->addLog(__METHOD__);
-        $postData = empty($this->arrPost) === true ? CIInput()->post() : $this->arrPost;
+        $postData = empty($this->arrPost) ? CIInput()->post() : $this->arrPost;
 
         $username = $postData["username"] ?? null;
         $password = $postData["password"] ?? null;
 
-        if ($username === null || empty($username) === true) {
+        if ($username === null || empty($username)) {
             ApiModel::out('Geen gebruikersnaam gevonden', 98);
         }
 
-        if ($password === null || empty($password) === true) {
+        if ($password === null || empty($password)) {
             ApiModel::out('Geen wachtwoord gevonden', 98);
         }
 
@@ -47,8 +47,8 @@ class Token extends API_Controller
         $data[UserModel::$primaryKey] = $arr_user[UserModel::$primaryKey];
         $data[ApiModel::$primaryKey] = $this->apiId;
         $data["ip_address"] = CIInput()->ip_address();
-        $data["browser"] = $this->agent->browser();
-        $data["platform"] = $this->agent->platform();
+        $data["browser"] = CIAgent()->browser();
+        $data["platform"] = CIAgent()->platform();
         $data["password_date"] = $arr_user['password_date'];
 
         $valuestring = json_encode($data);

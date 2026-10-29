@@ -38,6 +38,7 @@ function setTheme(theme) {
 
 function displayTheme(theme) {
     document.body.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-bs-theme', theme);
     for (let handler of themeChangeHandlers) {
         handler(theme);
     }

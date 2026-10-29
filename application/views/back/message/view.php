@@ -21,20 +21,20 @@
 
 <div class="card mt-3 <?= $reply_status ?>">
     <div class="card-header">
-        <button class="btn btn-info" id="reply_button" data-toggle="collapse" data-target="#reply_content"><i class="fa-fw fas fa-plus"></i> Beantwoord</button> <?= $delButton ?>
+        <button class="btn btn-info" id="reply_button" data-bs-toggle="collapse" data-bs-target="#reply_content"><i class="fa-fw fas fa-plus"></i> Beantwoord</button> <?= $delButton ?>
     </div>
     <div class="card-body">
         <div id="reply_content" class="panel-collapse collapse">
             <form method="POST" id="send">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Inhoud*</label>
                             <textarea class="form-control tinymce_noxss_clean" name="content"></textarea>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <?= add_csrf_value(); ?>
                             <input type="hidden" name="title" value="<?= $rsdb["title"]; ?>" />
                             <input type="hidden" name="to_user_id" value="<?= $rsdb["from_user_id"]; ?>" />

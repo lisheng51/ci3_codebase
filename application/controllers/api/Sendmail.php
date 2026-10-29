@@ -82,7 +82,7 @@ class Sendmail extends API_Controller
 
                 $file_ext = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $_FILES[$inputname]['name'];
                 if ($_FILES[$inputname]['error'] == 0) {
-                    if (move_uploaded_file($_FILES[$inputname]['tmp_name'], $file_ext) === true) {
+                    if (move_uploaded_file($_FILES[$inputname]['tmp_name'], $file_ext)) {
                         $file_content = file_get_contents($file_ext);
                         $base64String = base64_encode($file_content);
                         $data['base64'] = $base64String;
@@ -95,7 +95,7 @@ class Sendmail extends API_Controller
         } else {
             $file_ext = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $_FILES[$inputname]['name'];
             if ($_FILES[$inputname]['error'] == 0) {
-                if (move_uploaded_file($_FILES[$inputname]['tmp_name'], $file_ext) === true) {
+                if (move_uploaded_file($_FILES[$inputname]['tmp_name'], $file_ext)) {
                     $file_content = file_get_contents($file_ext);
                     $base64String = base64_encode($file_content);
                     $data['base64'] = $base64String;

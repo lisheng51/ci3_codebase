@@ -27,7 +27,7 @@ class EnvironmentModel
 
         $listdb = self::listDB();
         $select_name = !empty($name) ? $name : self::$primaryKey;
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $select .= $with_empty === true ? "<option value='' >------</option>" : "";
         foreach ($listdb as $rs) {
             $ckk = $id == $rs[self::$primaryKey] ? "selected" : '';

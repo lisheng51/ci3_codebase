@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-header"><?= lang('search_box_header_text') ?><div class="float-right"><?= $addButton ?></div>
+    <div class="card-header"><?= lang('search_box_header_text') ?><div class="float-end"><?= $addButton ?></div>
     </div>
     <div class="card-body">
         <form method="POST" id="form_search">
@@ -8,13 +8,13 @@
                     <?= labelSelectInput('Onderwerp', 'title') ?>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Datum</label>
                         <input type="text" name="reportrange" class="form-control" />
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Status</label>
                         <?= $select_open_status ?>
                     </div>

@@ -1,10 +1,82 @@
+// bootstrap-select 1.14.0-beta3 appends the label again on every 'refresh' / 'render' (and renders everything twice
+// on a select that is not initialised yet), so rebuild the picker instead
+(function ($) {
+    if (!$ || !$.fn || !$.fn.selectpicker) return;
+    const original = $.fn.selectpicker;
+    const patched = function (option, ...args) {
+        if (option === 'refresh' || option === 'render') {
+            return this.each(function () {
+                const $el = $(this);
+                const picker = $el.data('selectpicker');
+                if (picker) {
+                    const options = picker.options;
+                    original.call($el, 'destroy');
+                    original.call($el, options);
+                } else {
+                    original.call($el);
+                }
+            });
+        }
+        return original.apply(this, arguments);
+    };
+    Object.assign(patched, original);
+    $.fn.selectpicker = patched;
+})(window.jQuery);
+
 function checkIsMobile() {
     if (navigator.userAgent.indexOf("Mobile") > 0) {
         return true;
     }
     return false;
-
 }
+
+function myfetch(options = {}, url) {
+    if (!url) url = window.location.href;
+    return fetch(url, options)
+        .then(response => {
+            const contentDisposition = response.headers.get('content-disposition');
+            if (contentDisposition && contentDisposition.includes('attachment')) {
+                return response.blob().then(blob => {
+                    const filename = contentDisposition.split(';')[1].split('=')[1].replace(/"/g, '');
+                    const link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.setAttribute('download', filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    return { downloaded: true };
+                });
+            }
+
+            return response.text().then(text => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${text}`);
+                try {
+                    return JSON.parse(text);
+                } catch {
+                    return text;
+                }
+            });
+        })
+        .catch(err => {
+            if (options.silent === true) {
+                throw err;
+            }
+            let htmlString = err.message;
+            if (message_ajax_fail) {
+                htmlString = message_ajax_fail;
+            }
+            let title = "<span class='text-danger'>Foutmelding</span>";
+            Swal.fire({
+                title: title,
+                icon: 'error',
+                html: htmlString,
+                showCancelButton: false,
+                cancelButtonText: "Nee",
+                confirmButtonText: "OK"
+            });
+        });
+}
+
 
 function multiSelectDelBatch(nocheckedmsg = "Geen item gekozen") {
 
@@ -34,11 +106,11 @@ function multiSelectDelBatch(nocheckedmsg = "Geen item gekozen") {
                 confirmButtonText: "Ja"
             }).then((result) => {
                 if (result.value) {
-                    var searchIDs = $(".chat_id_select:checkbox:checked").map(function () {
+                    let searchIDs = $(".chat_id_select:checkbox:checked").map(function () {
                         return $(this).val();
                     }).get();
-                    var ajaxurl = site_url + path;
-                    var senddata = {
+                    let ajaxurl = site_url + path;
+                    let senddata = {
                         'log_id': searchIDs
                     };
                     axios_search(ajaxurl, senddata, $("button.remove_chat_more"));
@@ -80,37 +152,28 @@ function handle_select(elename = 'select.selectpicker') {
 
 function ajax_inline_boolean(ajaxurl, showBox = true) {
     $("tbody td label").on('click', '.inline_boolean', function () {
-        var currentEle = $(this);
-        var editid = currentEle.data("edit-id");
-        var field = currentEle.data("field");
-        var value = currentEle.data('value');
-        var newValue = value === 0 ? 1 : 0;
-        let form_data = new FormData();
-        form_data.set([csrf_token_name], csrf_hash);
-        form_data.set('editid', editid);
-        form_data.set('fieldvalue', newValue);
-        form_data.set('type', 'boolean');
-        form_data.set('field', field);
-        axios({
-            method: 'post',
-            url: ajaxurl,
-            data: form_data
-        }).then((response) => {
-            const json = response.data;
+        let currentEle = $(this);
+        let editid = currentEle.data("edit-id");
+        let field = currentEle.data("field");
+        let value = currentEle.data('value');
+        let newValue = value === 0 ? 1 : 0;
+        let formData = new FormData();
+        formData.set([csrf_token_name], csrf_hash);
+        formData.set('editid', editid);
+        formData.set('fieldvalue', newValue);
+        formData.set('type', 'boolean');
+        formData.set('field', field);
+
+        myfetch({
+            method: 'POST',
+            body: formData
+        }, ajaxurl).then(json => {
             if (json.status !== 'good') {
                 handle_info_box(json.status, json.msg);
             }
-
-            if (showBox === true && json.status == 'good') {
+            if (showBox && json.status === 'good') {
                 handle_info_box(json.status, json.msg);
             }
-        }).catch((error) => {
-            const jqxhr = error.response;
-            if (typeof jqxhr !== 'undefined') {
-                message_ajax_fail_show(jqxhr);
-            }
-            console.log(error);
-        }).then((response) => {
             currentEle.data('value', newValue);
         });
     });
@@ -125,10 +188,10 @@ function ajax_inline_edit(ajaxurl, showBox = true, inputsize = 25) {
         e.stopPropagation();
         if ($('input.inline_edit_input').length > 0) return;
 
-        var currentEle = $(this);
-        var editid = currentEle.data("edit-id");
-        var field = currentEle.data("field");
-        var value = $(this).text();
+        let currentEle = $(this);
+        let editid = currentEle.data("edit-id");
+        let field = currentEle.data("field");
+        let value = $(this).text();
 
         currentEle.html('<input size="' + inputsize + '" class="inline_edit_input" type="text" value="' + value + '" />');
         $("input.inline_edit_input").focus();
@@ -136,37 +199,29 @@ function ajax_inline_edit(ajaxurl, showBox = true, inputsize = 25) {
             if (event.keyCode == 13) {
                 let newValue = $("input.inline_edit_input").val().trim();
                 if (value !== newValue) {
-                    let form_data = new FormData();
-                    form_data.set('editid', editid);
-                    form_data.set('field', field);
-                    form_data.set('fieldvalue', newValue);
-                    form_data.set([csrf_token_name], csrf_hash);
+                    let formData = new FormData();
+                    formData.set('editid', editid);
+                    formData.set('field', field);
+                    formData.set('fieldvalue', newValue);
+                    formData.set([csrf_token_name], csrf_hash);
 
-                    axios({
-                        method: 'post',
-                        url: ajaxurl,
-                        data: form_data
-                    }).then((response) => {
-                        const json = response.data;
+
+                    myfetch({
+                        method: 'POST',
+                        body: formData
+                    }, ajaxurl).then(json => {
                         if (json.status !== 'good') {
                             handle_info_box(json.status, json.msg);
                         }
 
-                        if (showBox === true && json.status == 'good') {
+                        if (showBox && json.status == 'good') {
                             handle_info_box(json.status, json.msg);
                         }
 
                         if (json.status == 'good') {
                             currentEle.text(newValue);
                         }
-                    }).catch((error) => {
-                        const jqxhr = error.response;
-                        if (typeof jqxhr !== 'undefined') {
-                            message_ajax_fail_show(jqxhr);
-                        }
-                        console.log(error);
-                    }).then((response) => {
-
+                        currentEle.data('value', newValue);
                     });
                 } else {
                     currentEle.text(newValue);
@@ -200,28 +255,20 @@ function ajax_sort(ajaxurl) {
         update: function (e, ui) {
             let ul = $(ui.item).closest('tbody#itemContainer');
             let index = 0;
-            let form_data = new FormData();
-            form_data.set([csrf_token_name], csrf_hash);
+            let formData = new FormData();
+            formData.set([csrf_token_name], csrf_hash);
             ul.find('>tr').each(function () {
                 index++;
                 $(this).find('input').val(index);
                 let formkey = $(this).find('input').attr('name');
-                form_data.set(formkey, index);
+                formData.set(formkey, index);
             });
-            axios({
-                method: 'post',
-                url: ajaxurl,
-                data: form_data
-            }).then((response) => {
 
-            }).catch((error) => {
-                const jqxhr = error.response;
-                if (typeof jqxhr !== 'undefined') {
-                    message_ajax_fail_show(jqxhr);
-                }
-                console.log(error);
-            }).then((response) => {
-                //currentEle.data('value', newValue);
+            myfetch({
+                method: 'POST',
+                body: formData
+            }, ajaxurl).then(json => {
+
             });
         }
     });
@@ -587,31 +634,32 @@ function handle_delete_box(htmlText = "Weet u zeker dat u deze wilt verwijderen?
             confirmButtonText: "Ja"
         }).then((result) => {
             if (result.value) {
-                let form_data = new FormData();
-                form_data.set([csrf_token_name], csrf_hash);
-                form_data.set('del_id', del_id);
-                axios({
-                    method: 'post',
-                    url: del_url,
-                    data: form_data
-                }).then((response) => {
-                    const json = response.data;
-                    if (json.status === 'good') {
-                        $("#" + del_id + "").fadeOut('slow', function () {
+                let formData = new FormData();
+                formData.set([csrf_token_name], csrf_hash);
+                formData.set('del_id', del_id);
+
+                myfetch({
+                    method: 'POST',
+                    body: formData
+                }, del_url).then(json => {
+                    if (json.status === 'good' && !json.redirect_url) {
+                        $("#" + del_id).fadeOut('slow', function () {
                             $(this).remove();
-                            var countnow = $("span.totalcount").text();
+                            let countnow = parseInt($("span.totalcount").text(), 10) || 0;
                             $('span.totalcount').text(countnow - 1);
                         });
                     }
-                    handle_info_box(json.status, json.msg);
-                }).catch((error) => {
-                    const jqxhr = error.response;
-                    if (typeof jqxhr !== 'undefined') {
-                        message_ajax_fail_show(jqxhr);
+
+                    if (json.type_done) {
+                        switch (json.type_done) {
+                            case 'redirect':
+                                if (json.redirect_url) {
+                                    window.location.href = json.redirect_url;
+                                }
+                                break;
+                        }
                     }
-                    console.log(error);
-                }).then((response) => {
-                    //submit_button.html(submit_button_text);
+                    handle_info_box(json.status, json.msg);
                 });
             }
         });
@@ -675,32 +723,22 @@ function ajax_pagination(form_id = "form#form_search", contentid = "div#ajax_sea
             }
         }
 
-        axios({
-            method: 'post',
-            url: ajaxurl,
-            data: form_data,
-            onUploadProgress: (progressEvent) => {
-                submit_button.parent().parent().addClass("disabled");
-                submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
-            }
-        }).then((response) => {
-            const json = response.data;
+        let submit_button_text = submit_button.parent().parent().html();
+        submit_button.parent().parent().addClass("disabled");
+        submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
+        myfetch({
+            method: 'POST',
+            body: form_data
+        }, ajaxurl).then(json => {
             if (json.result) {
                 $(contentid).html(json.result);
             } else {
                 handle_info_box(json.status, json.msg);
             }
-        }).catch((error) => {
-            const jqxhr = error.response;
-            if (typeof jqxhr !== 'undefined') {
-                message_ajax_fail_show(jqxhr);
-            }
-            console.log(error);
-        }).then((response) => {
-            //submit_button.html(submit_button_text);
-            submit_button.parent().parent().removeClass("disabled");
+        }).finally(() => {
+            submit_button.parent().parent().html(submit_button_text);
+            submit_button.parent().parent().removeAttr("disabled");
         });
-
     });
 
     $("select[name=sql_orderby_field]").change(function (e) {
@@ -714,9 +752,15 @@ function ajax_pagination(form_id = "form#form_search", contentid = "div#ajax_sea
     });
 }
 
-function axios_search(ajaxurl, item, submit_button) {
+function toFormData(item = {}) {
+    if (item instanceof FormData) {
+        return item;
+    }
     let form_data = new FormData();
-    form_data.set([csrf_token_name], csrf_hash);
+    if (typeof item === 'string') {
+        new URLSearchParams(item).forEach((value, key) => form_data.append(key, value));
+        return form_data;
+    }
     for (var section in item) {
         if (item[section] instanceof Array) {
             item[section].forEach(value => form_data.append(section + '[]', value));
@@ -724,67 +768,45 @@ function axios_search(ajaxurl, item, submit_button) {
             form_data.append(section, item[section]);
         }
     }
+    return form_data;
+}
+
+function axios_search(ajaxurl, item, submit_button) {
+    let form_data = toFormData(item);
+    form_data.set([csrf_token_name], csrf_hash);
 
     ajax_search(ajaxurl, form_data, submit_button);
 }
 
-function ajax_search(ajaxurl, senddata, submit_button, contentid = "div#ajax_search_content") {
+function ajax_search(ajaxurl, formData, submit_button, ajax_content_div = "div#ajax_search_content") {
+
     const submit_button_text = submit_button.html();
-    axios({
-        method: 'post',
-        url: ajaxurl,
-        data: senddata,
-        headers: {
-            'Content-Type': false,
-            'processData': false,
-        },
-        onUploadProgress: (progressEvent) => {
-            submit_button.attr("disabled", "disabled");
-            submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
-        }
-    }).then((response) => {
-        const headerval = response.headers['content-disposition'];
-        if (typeof headerval !== 'undefined') {
-            const filename = headerval.split(';')[1].split('=')[1].replace('"', '').replace('"', '');
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', filename);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+    submit_button.attr("disabled", "disabled");
+    submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
+
+    myfetch({
+        method: 'POST',
+        body: formData
+    }, ajaxurl).then(json => {
+        if (json.type_done === 'redirect' && json.redirect_url) {
+            window.location.href = json.redirect_url;
+            return;
         }
 
-        const json = response.data;
-        if (json.type_done) {
-            switch (json.type_done) {
-                case 'redirect':
-                    if (json.redirect_url) {
-                        window.location.href = json.redirect_url;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
         if (json.result) {
-            $(contentid).html(json.result);
+            $(ajax_content_div).html(json.result);
         } else {
             handle_info_box(json.status, json.msg);
         }
 
         event_result_box(json.status, json.msg);
-    }).catch((error) => {
-        const jqxhr = error.response;
-        if (typeof jqxhr !== 'undefined') {
-            message_ajax_fail_show(jqxhr);
-        }
-        console.log(error);
-    }).then((response) => {
-        submit_button.html(submit_button_text);
-        submit_button.removeAttr("disabled");
-    });
+    })
+        .finally(() => {
+            submit_button.html(submit_button_text);
+            submit_button.removeAttr("disabled");
+        });
 }
+
 
 function event_result_box(status, msg) {
     var title;
@@ -816,8 +838,20 @@ function event_result_box(status, msg) {
     }
 }
 
+function tinymceTheme() {
+    let theme = null;
+    try {
+        theme = localStorage.getItem('theme');
+    } catch (e) { }
+    if (!theme) {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return theme === 'dark' ? { skin: 'oxide-dark', content_css: 'dark' } : {};
+}
+
 function setup_tinymce(select, height = 300, content_style = "") {
     tinymce.init({
+        ...tinymceTheme(),
         selector: select,
         language_url: site_url + 'node_modules/tinymce-i18n/langs6/nl.js', // site absolute URL
         language: 'nl',
@@ -834,56 +868,35 @@ function setup_tinymce(select, height = 300, content_style = "") {
     });
 }
 
-function refreshTinymceFileUrl(base64, name, user_id = 0) {
-    let newpath = "";
-    let senddata = {
-        base64: base64,
-        name: name,
-        user_id: user_id,
-        [csrf_token_name]: csrf_hash
-    };
-    $.ajax({
-        async: false,
-        url: site_url + 'ajax/upload/tinymce',
-        data: senddata,
-        type: 'POST',
-        dataType: 'json'
-    }).done(function (json) {
-        newpath = json.result;
-    }).always(function () { }).fail(function (jqxhr) {
-        message_ajax_fail_show(jqxhr);
-    });
+async function refreshTinymceFileUrl(base64, name, user_id = 0) {
+    let formData = new FormData();
+    formData.append('base64', base64);
+    formData.append('name', name);
+    formData.append('user_id', user_id);
+    formData.append(csrf_token_name, csrf_hash);
 
-    // let form_data = new FormData();
-    // form_data.set([csrf_token_name], csrf_hash);
-    // form_data.set('base64', base64);
-    // form_data.set('name', name);
-    // form_data.set('user_id', user_id);
+    try {
+        let response = await fetch(site_url + 'ajax/upload/tinymce', {
+            method: 'POST',
+            body: formData
+        });
 
-    // axios({
-    //     method: 'post',
-    //     url: site_url + 'ajax/upload/tinymce',
-    //     data: form_data
-    // }).then((response) => {
-    //     const json = response.data;
-    //     newpath = json.result;
-    //     return newpath;
-    // }).catch((error) => {
-    //     const jqxhr = error.response;
-    //     if (typeof jqxhr !== 'undefined') {
-    //         message_ajax_fail_show(jqxhr);
-    //     }
-    //     console.log(error);
-    // }).then((response) => {
-    //     return newpath;
-    // });
-    return newpath;
+        if (!response.ok) {
+            throw new Error(`Network error: ${response.status}`);
+        }
 
-
+        let json = await response.json();
+        return json.result || "";
+    } catch (error) {
+        message_ajax_fail_show(error);
+        return "";
+    }
 }
+
 
 function setup_tinymce_noxss_clean(selector = '.tinymce_noxss_clean', height = 600, user_id = 0, content_style = "") {
     tinymce.init({
+        ...tinymceTheme(),
         selector: selector,
         language_url: site_url + 'node_modules/tinymce-i18n/langs6/nl.js', // site absolute URL
         language: 'nl',
@@ -913,11 +926,14 @@ function setup_tinymce_noxss_clean(selector = '.tinymce_noxss_clean', height = 6
                 let reader = new FileReader();
                 reader.onload = function () {
                     let base64 = reader.result.split(',')[1];
-                    let newPath = refreshTinymceFileUrl(base64, file.name, user_id);
-                    cb(newPath, {
-                        title: file.name,
-                        text: file.name
-                    });
+
+                    (async () => {
+                        let newpath = await refreshTinymceFileUrl(base64, file.name, user_id);
+                        cb(newpath, {
+                            title: file.name,
+                            text: file.name
+                        });
+                    })();
                 };
                 reader.readAsDataURL(file);
             };
@@ -928,6 +944,7 @@ function setup_tinymce_noxss_clean(selector = '.tinymce_noxss_clean', height = 6
 
 function setup_tinymce_noxss_clean_extended(selector = '.tinymce_noxss_clean', height = 600, user_id = 0, content_style = "") {
     tinymce.init({
+        ...tinymceTheme(),
         selector: selector,
         plugins: 'image code link lists',
         language_url: site_url + 'node_modules/tinymce-i18n/langs6/nl.js', // site absolute URL
@@ -964,11 +981,13 @@ function setup_tinymce_noxss_clean_extended(selector = '.tinymce_noxss_clean', h
                 let reader = new FileReader();
                 reader.onload = function () {
                     let base64 = reader.result.split(',')[1];
-                    let newPath = refreshTinymceFileUrl(base64, file.name, user_id);
-                    cb(newPath, {
-                        title: file.name,
-                        text: file.name
-                    });
+                    (async () => {
+                        let newpath = await refreshTinymceFileUrl(base64, file.name, user_id);
+                        cb(newpath, {
+                            title: file.name,
+                            text: file.name
+                        });
+                    })();
                 };
                 reader.readAsDataURL(file);
             };
@@ -978,19 +997,12 @@ function setup_tinymce_noxss_clean_extended(selector = '.tinymce_noxss_clean', h
 }
 
 function message_ajax_fail_show(jqxhr) {
-    let htmlString = "";
-    if (jqxhr.hasOwnProperty('responseText')) {
-        let str = jqxhr.responseText;
-        htmlString = str.replace(/<style\b[^<>]*>[\s\S]*?<\/style\s*>/gi, '');
-    }
-
-    if (jqxhr.hasOwnProperty('data')) {
-        let str = jqxhr.data;
-        htmlString = str.replace(/<style\b[^<>]*>[\s\S]*?<\/style\s*>/gi, '');
-    }
-
+    let htmlString;
     if (message_ajax_fail) {
         htmlString = message_ajax_fail;
+    } else {
+        var str = jqxhr.responseText ?? jqxhr.data;
+        htmlString = str.replace(/<style\b[^<>]*>[\s\S]*?<\/style\s*>/gi, '');
     }
     var title = "<span class='text-danger'>Foutmelding - " + jqxhr.status + " " + jqxhr.statusText + "</span>";
     Swal.fire({
@@ -1018,12 +1030,10 @@ function HrefPermissionCk(select) {
             let form_data = new FormData();
             form_data.set([csrf_token_name], csrf_hash);
             form_data.set('pathurl', pathurl);
-            axios({
-                method: 'post',
-                url: site_url + 'ajax/Permission/checkForUser',
-                data: form_data
-            }).then((response) => {
-                const json = response.data;
+            myfetch({
+                method: 'POST',
+                body: form_data
+            }, ajaxurl).then(json => {
                 if (json.type_done) {
                     switch (json.type_done) {
                         case 'redirect':
@@ -1035,19 +1045,12 @@ function HrefPermissionCk(select) {
                             break;
                     }
                 }
+
                 if (json.status === 'error') {
                     handle_info_box(json.status, json.msg);
                 } else {
                     window.location.href = redirectUrl;
                 }
-            }).catch((error) => {
-                const jqxhr = error.response;
-                if (typeof jqxhr !== 'undefined') {
-                    message_ajax_fail_show(jqxhr);
-                }
-                console.log(error);
-            }).then((response) => {
-
             });
         }
         return false;

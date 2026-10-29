@@ -49,7 +49,7 @@ class Message extends API_Controller
         $dataUser = ApiModel::checkFetchByJWT();
         $messageId = CIInput()->post("message_id") ?? 0;
         $rsdb = MessageModel::getOneById(intval($messageId));
-        if (empty($rsdb) === true || $messageId <= 0) {
+        if (empty($rsdb) || $messageId <= 0) {
             ApiModel::outNOK();
         }
 

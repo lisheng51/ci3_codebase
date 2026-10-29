@@ -51,9 +51,19 @@ trait BasicModel
     }
 
 
+    // field_exists() doet elke keer een SHOW COLUMNS; per tabel 1x per request is genoeg
+    public static function fieldExists(string $field = ''): bool
+    {
+        static $fields = [];
+        if (!isset($fields[self::$table])) {
+            $fields[self::$table] = CIDb()->list_fields(self::$table) ?: [];
+        }
+        return in_array($field, $fields[self::$table]);
+    }
+
     public static function add(array $data = []): int
     {
-        if (CIDb()->field_exists(self::$fieldCreatedBy, self::$table)) {
+        if (self::fieldExists(self::$fieldCreatedBy)) {
             $data[self::$fieldCreatedBy] = LoginModel::userId();
         }
         CIDb()->insert(self::$table, $data);
@@ -62,7 +72,7 @@ trait BasicModel
 
     public static function edit(int $id = 0, array $data = []): bool
     {
-        if (CIDb()->field_exists(self::$fieldModifiedBy, self::$table)) {
+        if (self::fieldExists(self::$fieldModifiedBy)) {
             $data[self::$fieldModifiedBy] = LoginModel::userId();
         }
 
@@ -80,7 +90,7 @@ trait BasicModel
     {
         if (self::$usingSoftDel) {
             $data[self::$fieldIsDel] = 1;
-            if (CIDb()->field_exists(self::$fieldDeletedAt, self::$table)) {
+            if (self::fieldExists(self::$fieldDeletedAt)) {
                 $data[self::$fieldDeletedAt] = date('Y-m-d H:i:s');
             }
             return self::edit($id, $data);

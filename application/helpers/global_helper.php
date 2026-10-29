@@ -12,6 +12,23 @@ if (!function_exists('debug_as_file')) {
     }
 }
 
+if (!function_exists('getWebServerInfo')) {
+    function getWebServerInfo(): string
+    {
+        return isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : 'Unknown';
+    }
+}
+
+if (!function_exists('getDatabaseServerInfo')) {
+    function getDatabaseServerInfo(): string
+    {
+        CILoader()->database();
+        $object = CIDb()->conn_id;
+        $result = $object->host_info . ' ' . $object->server_info;
+        return $result;
+    }
+}
+
 if (!function_exists('stringBetween')) {
 
     function stringBetween($string, $start, $end)
@@ -48,7 +65,7 @@ if (!function_exists('includeModuleTrait')) {
 
     function includeModuleTrait(string $filename, string $module)
     {
-        $ck_file_exist_path = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'traits' . DIRECTORY_SEPARATOR . $filename . '.php';
+        $ck_file_exist_path = MODULESPATH . $module . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'traits' . DIRECTORY_SEPARATOR . $filename . '.php';
         if (file_exists($ck_file_exist_path)) {
             include_once $ck_file_exist_path;
         }
@@ -59,7 +76,7 @@ if (!function_exists('includeModuleModel')) {
 
     function includeModuleModel(string $module, string $folder = "models")
     {
-        $globalPath = FCPATH . 'modules' . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR;
+        $globalPath = MODULESPATH . $module . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR;
         $files = glob($globalPath . "*.php");
         if (!empty($files)) {
             foreach ($files as $file) {
@@ -360,7 +377,7 @@ if (!function_exists('get_curl')) {
 
     function get_curl($url = "", $params = [], $methode = "POST", $CURLOPT_HTTPHEADER = [])
     {
-        if (empty($url) === true || filter_var($url, FILTER_VALIDATE_URL) === false) {
+        if (empty($url) || filter_var($url, FILTER_VALIDATE_URL) === false) {
             return;
         }
 
@@ -390,7 +407,6 @@ if (!function_exists('get_curl')) {
         if (curl_errno($ch)) {
             return;
         }
-        curl_close($ch);
         if ($response === false || empty($response) === true) {
             return;
         }
@@ -421,14 +437,14 @@ if (!function_exists('select_page_limit')) {
             $limit = $setLimit;
         }
 
-        $select = $label . '<select name="' . $name . '" class="form-control">';
+        $select = $label . '<select name="' . $name . '" class="form-select">';
         $select .= "<option value=''>------</option>";
         foreach ($listdb as $key => $rs) {
             $ckk = $limit == $key ? "selected" : '';
             $select .= "<option value={$key} $ckk >$rs</option>";
         }
         $select .= '</select>';
-        $html = '<div class="form-group">' . $select . '</div>';
+        $html = '<div class="mb-3">' . $select . '</div>';
         return $html;
     }
 }
@@ -464,14 +480,14 @@ if (!function_exists('select_boolean')) {
             $id = $setId;
         }
 
-        $select = '<select name="' . $name . '" class="form-control">';
+        $select = '<select name="' . $name . '" class="form-select">';
         $select .= $with_empty === true ? "<option value='' >------</option>" : "";
         foreach ($listdb as $key => $value) {
             $ckk = $id === $key ? "selected" : '';
             $select .= "<option value={$key} $ckk >$value</option>";
         }
         $select .= '</select>';
-        $html = '<div class="form-group">' . $select . '</div>';
+        $html = '<div class="mb-3">' . $select . '</div>';
         return $html;
     }
 }
@@ -480,7 +496,7 @@ if (!function_exists('select')) {
 
     function select(string $name = '', array $listdb = [], string $setValue = "", bool $with_empty = false): string
     {
-        $select = '<select name="' . $name . '" class="form-control nochange">';
+        $select = '<select name="' . $name . '" class="form-select nochange">';
         $select .= $with_empty === true ? "<option value='' >------</option>" : "";
         foreach ($listdb as $value => $label) {
             $ckk = $setValue == $value ? "selected" : '';
@@ -536,7 +552,7 @@ if (!function_exists('c_key')) {
     function c_key(string $key = ""): string
     {
         $value = ConfigModel::fetch($key);
-        if ($key === 'webapp_default_show_per_page' && empty($value)) {
+        if ($key === '_core_default_show_per_page' && empty($value)) {
             return "50";
         }
         if ($key === '_core_app_buildnr' && empty($value)) {
@@ -608,7 +624,6 @@ if (!function_exists('url_exists')) {
                 }
                 $listdb[$key] = $appStatusOnline;
                 curl_multi_remove_handle($mh, $ch[$key]);
-                curl_close($ch[$key]);
             }
             curl_multi_close($mh);
         }
@@ -771,14 +786,14 @@ if (!function_exists('select_order_by')) {
         }
 
         $default = !empty($setDefault) ? $setDefault : array_key_first($listdb);
-        $select = $label . '<select name=' . $selectName . ' class="form-control">';
+        $select = $label . '<select name=' . $selectName . ' class="form-select">';
         $select .= '<option value=' . $default . ' >------</option>';
         foreach ($listdb as $key => $value) {
             $ckk = $idNow === $key ? "selected" : '';
             $select .= "<option value={$key} $ckk >$value</option>";
         }
         $select .= '</select>';
-        $html = '<div class="form-group">' . $select . '</div>';
+        $html = '<div class="mb-3">' . $select . '</div>';
         return $html;
     }
 }

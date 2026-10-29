@@ -5,20 +5,20 @@
             <div class="row">
                 <div class="col-md-12">
                     <label>Onderwerp*</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="text" class="form-control" required name="title" />
                     </div>
                 </div>
 
                 <div class="col-md-12">
                     <label>Inhoud*</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <textarea class="form-control tinymce_noxss_clean" name="content"></textarea>
                     </div>
                 </div>
 
                 <div class="col-md-12">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="hidden" name="to_user_id" value="<?= $to_user_id; ?>" />
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button() ?>

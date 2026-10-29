@@ -7,7 +7,7 @@ CREATE TABLE `_default_` (
   `modifiedby` int(10) UNSIGNED NOT NULL,
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   `deleted_at` datetime(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexen voor geëxporteerde tabellen

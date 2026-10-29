@@ -5,7 +5,7 @@
             <div class="row">
                 <div class="col-3">
                     <label>Datum</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="text" name="reportrange" class="form-control" />
                     </div>
                 </div>

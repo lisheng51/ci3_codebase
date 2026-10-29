@@ -1,12 +1,12 @@
 <table class="table table-hover tree">
     <thead>
         <tr>
-            <th width="40%"><button type="button" class="btn btn-success btn-sm" data-add_link="<?= $add_link ?>" data-toggle="modal" data-target="#Modal_question_add"><i class="fas fa-plus"></i></button> <label>Naam</label></th>
+            <th width="40%"><button type="button" class="btn btn-success btn-sm" data-add_link="<?= $add_link ?>" data-bs-toggle="modal" data-bs-target="#Modal_question_add"><i class="fas fa-plus"></i></button> <label>Naam</label></th>
             <th width="30%"><label>Omschrijving</label></th>
             <th width="30%">
-                <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input" type="checkbox" id="view_mode_checkbox" <?= $ckk; ?>>
-                    <label class="custom-control-label font-weight-normal" for="view_mode_checkbox">Met archief</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="view_mode_checkbox" <?= $ckk; ?>>
+                    <label class="form-check-label fw-normal" for="view_mode_checkbox">Met archief</label>
                 </div>
             </th>
         </tr>
@@ -20,7 +20,7 @@
                 <td><?= $value["description"] ?></td>
                 <td>
                     <button type="button" class="btn btn-primary btn-sm" id="start_ajax_sort"><i class="fa fa-arrows-alt"></i></button>
-                    <button type="button" class="btn btn-primary btn-sm" data-search_data="<?= $value[BookMarkModel::$primaryKey]; ?>" data-edit_link="<?= $value["edit_link"] ?>" data-toggle="modal" data-target="#Modal_question_edit"><i class="fa fa-pencil-alt"></i></button>
+                    <button type="button" class="btn btn-primary btn-sm" data-search_data="<?= $value[BookMarkModel::$primaryKey]; ?>" data-edit_link="<?= $value["edit_link"] ?>" data-bs-toggle="modal" data-bs-target="#Modal_question_edit"><i class="fa fa-pencil-alt"></i></button>
                     <?= $value["change_button"]; ?>
                     <?= $value["add_child_link"]; ?>
                 </td>

@@ -6,7 +6,7 @@
                 <form method="POST" id="form_search">
                     <div class="row">
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Datum</label>
                                 <input type="text" name="reportrange" class="form-control" />
                             </div>
@@ -53,7 +53,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Details</div>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -62,28 +62,28 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>Datum & Tijd:</label>
                                             <span id="Modal_view_detail_date"></span>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>Naam:</label>
                                             <span id="Modal_view_detail_display_info"></span> <span id="Modal_view_detail_display_info"></span>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>Beschrijving:</label>
                                             <span id="Modal_view_detail_description"></span>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>Path/url:</label>
                                             <span id="Modal_view_detail_url"></span>
                                         </div>
@@ -95,7 +95,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn" data-dismiss="modal">Gezien</button>
+                <button type="button" class="btn" data-bs-dismiss="modal">Gezien</button>
             </div>
         </div>
     </div>
@@ -113,27 +113,31 @@
 
     function run_modal_view_detail_app_log() {
         $('#Modal_view_detail_app_log').on('show.bs.modal', function(e) {
-            var url = $(e.relatedTarget).data('view_link');
-            $.ajax({
-                url: url,
-                dataType: 'json',
-                beforeSend: function() {
-                    $(e.relatedTarget).html('<i class="fa fa-spinner fa-pulse"></i> ');
-                    $('span#Modal_view_detail_id').html('<i class="fa fa-spinner fa-pulse"></i> ');
-                    $('span#Modal_view_detail_date').html('<i class="fa fa-spinner fa-pulse"></i> ');
-                    $('span#Modal_view_detail_display_info').html('<i class="fa fa-spinner fa-pulse"></i> ');
-                    $('span#Modal_view_detail_description').html('<i class="fa fa-spinner fa-pulse"></i> ');
-                    $('span#Modal_view_detail_url').html('<i class="fa fa-spinner fa-pulse"></i> ');
-                }
-            }).done(function(json) {
+            let submit_button = $(e.relatedTarget);
+            let submit_button_text = submit_button.html();
+            let url = submit_button.data('view_link');
+
+            submit_button.attr("disabled", "disabled");
+            submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
+
+            $('span#Modal_view_detail_id').html('<i class="fa fa-spinner fa-pulse"></i> ');
+            $('span#Modal_view_detail_date').html('<i class="fa fa-spinner fa-pulse"></i> ');
+            $('span#Modal_view_detail_display_info').html('<i class="fa fa-spinner fa-pulse"></i> ');
+            $('span#Modal_view_detail_description').html('<i class="fa fa-spinner fa-pulse"></i> ');
+            $('span#Modal_view_detail_url').html('<i class="fa fa-spinner fa-pulse"></i> ');
+
+            myfetch({
+                method: 'GET'
+            }, url).then(json => {
                 $('span#Modal_view_detail_id').text(json.log_id);
                 $('span#Modal_view_detail_date').text(json.date);
                 $('span#Modal_view_detail_display_info').text(json.display_info);
                 $('span#Modal_view_detail_description').text(json.description);
                 $('span#Modal_view_detail_url').text(json.path);
-                $(e.relatedTarget).html('<i class="fa fa-eye"></i> ');
-            }).fail(function(jqxhr) {
-                message_ajax_fail_show(jqxhr);
+
+            }).finally(() => {
+                submit_button.html(submit_button_text);
+                submit_button.removeAttr("disabled");
             });
         });
     }

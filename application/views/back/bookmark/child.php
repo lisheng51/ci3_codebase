@@ -5,7 +5,7 @@
         <td><?= $value["description"] ?></td>
         <td>
             <button type="button" class="btn btn-primary btn-sm" id="start_ajax_sort"><i class="fa fa-arrows-alt"></i></button>
-            <button type="button" class="btn btn-primary btn-sm" data-search_data="<?= $value[BookMarkModel::$primaryKey]; ?>" data-edit_link="<?= $value["edit_link"] ?>" data-toggle="modal" data-target="#Modal_question_edit"><i class="fa fa-pencil-alt"></i></button>
+            <button type="button" class="btn btn-primary btn-sm" data-search_data="<?= $value[BookMarkModel::$primaryKey]; ?>" data-edit_link="<?= $value["edit_link"] ?>" data-bs-toggle="modal" data-bs-target="#Modal_question_edit"><i class="fa fa-pencil-alt"></i></button>
             <?= $value["change_button"]; ?>
             <a class="btn btn-success btn-sm" href="<?= $value["url"] ?>"><?= lang('view_icon') ?></a>
         </td>

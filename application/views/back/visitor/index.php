@@ -22,7 +22,7 @@
                         </div>
 
                         <div class="col-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Datum</label>
                                 <input type="text" name="reportrange" class="form-control" />
                             </div>
@@ -61,45 +61,5 @@
         e.preventDefault();
         ajax_form_search($(this));
     });
-
-    // $("form#form_search").submit(function(e) {
-    //     e.preventDefault();
-    //     let form_id = $(this);
-    //     let senddata = new FormData(form_id[0]);
-    //     let submit_button = form_id.find('button[type=submit]');
-    //     let submit_button_text = submit_button.html();
-    //     let ajaxurl = window.location.href;
-
-    //     axios({
-    //         method: 'post',
-    //         url: ajaxurl,
-    //         data: senddata,
-    //         headers: {
-    //             'Content-Type': false,
-    //             'processData': false,
-    //         },
-    //         onUploadProgress: (progressEvent) => {
-    //             submit_button.attr("disabled", "disabled");
-    //             submit_button.html('<i class="fa fa-spinner fa-pulse"></i> ');
-    //         }
-    //     }).then((response) => {
-    //         let json = response.data;
-    //         Vue.createApp({
-    //             data() {
-    //                 return {
-    //                     result: json.result
-    //                 }
-    //             }
-    //         }).mount('#ajax_search_content')
-
-    //     }).catch((error) => {
-    //         let jqxhr = error.response;
-    //         message_ajax_fail_show(jqxhr);
-    //     }).then((response) => {
-    //         submit_button.html(submit_button_text);
-    //         submit_button.removeAttr("disabled");
-    //     });
-
-    // });
     input_reportrange('input[name="reportrange"]');
 </script>

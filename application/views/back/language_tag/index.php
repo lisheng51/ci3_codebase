@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-header"><?= lang('search_box_header_text') ?><div class="float-right">
+    <div class="card-header"><?= lang('search_box_header_text') ?><div class="float-end">
             <a href="<?= site_url($path_name . '/language_tag/sync') ?>" class="btn btn-dark btn-sm">Synchroniseren</a>
             <a href="<?= site_url($path_name . '/language_tag/add') ?>" class="btn btn-success btn-sm"><?= lang('add_icon') ?></a>
             <a href="<?= site_url($path_name . '/language_tag/add?mode=tinymce') ?>" class="btn btn-success btn-sm"><i class="fa-fw fa-regular fa-square-plus"></i></a>

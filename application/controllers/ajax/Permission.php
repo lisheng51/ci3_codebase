@@ -5,7 +5,7 @@ class Permission extends Ajax_Controller
 
     public function checkForUser()
     {
-        $pathurl = CIInput()->post('pathurl');
+        $pathurl = CIInput()->post('pathurl')??'';
         if (LoginModel::userId() <= 0) {
             $json["type_done"] = "redirect";
             $json["redirect_url"] = login_url('?redirect_url=' . site_url($pathurl));
@@ -30,13 +30,12 @@ class Permission extends Ajax_Controller
                 $listdb = PermissionModel::AllByPermissionIds($all_permissions);
                 foreach ($listdb as $rsdb) {
                     $path = $rsdb['use_path'] > 0 ? $rsdb['path'] . '/' : null;
-                    $permissions[] = $path . AccessCheckModel::$backPath . '/' . $rsdb['object'] . '/' . $rsdb['method'] . config_item('url_suffix');
+                    $permissions[] = strtolower($path . AccessCheckModel::$backPath . '/' . $rsdb['object'] . '/' . $rsdb['method'] . config_item('url_suffix'));
                 }
             }
 
             $permisson = array_unique($permissions);
-
-            $ckPermission = in_array($pathurl, $permisson, true);
+            $ckPermission = in_array(strtolower($pathurl), $permisson, true);
             if (!$ckPermission) {
                 $json["msg"] = 'Niet gemachtigd';
                 $json["status"] = "error";

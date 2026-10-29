@@ -21,19 +21,15 @@ class UserModel
 
     public static function isSuperUser(array $userdb = []): bool
     {
-        $loginUserId = LoginModel::userId();
-        $checkUserId = $loginUserId === self::$secureId;
-        if ($checkUserId) {
-            return true;
+        $arr_userdb = $userdb;
+        if (empty($arr_userdb)) {
+            $loginUserId = LoginModel::userId();
+            $arr_userdb = self::getOneById($loginUserId);
         }
 
-        $arr_userdb = self::getOneById($loginUserId);
-        if (!empty($userdb)) {
-            $arr_userdb = $userdb;
-            $checkUserId = intval($arr_userdb[self::$primaryKey]) === self::$secureId;
-            if ($checkUserId) {
-                return true;
-            }
+        $checkUserId = intval($arr_userdb[self::$primaryKey]) === self::$secureId;
+        if ($checkUserId) {
+            return true;
         }
 
         $groupIds = $arr_userdb['permission_group_ids'];
@@ -61,7 +57,7 @@ class UserModel
         self::joinLogin();
         $listdb = self::getAll();
         $select_name = !empty($name) ? $name : self::$primaryKey;
-        $select = '<select name="' . $select_name . '" class="form-control">';
+        $select = '<select name="' . $select_name . '" class="form-select">';
         $select .= $with_empty === true ? "<option value='' >------</option>" : "";
         foreach ($listdb as $rs) {
             $ckk = $id == $rs[self::$primaryKey] ? "selected" : '';

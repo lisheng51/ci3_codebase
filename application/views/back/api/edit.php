@@ -5,31 +5,31 @@
             <div class="row">
                 <div class="col-3">
                     <label>Naam*</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="text" maxlength="100" class="form-control" name="name" required value="<?= $rsdb["name"] ?? "" ?>">
                     </div>
                 </div>
                 <div class="col-3">
                     <label>Key*</label>
-                    <div class="form-group">
+                    <div class="mb-3">
 
                         <input type="text" maxlength="32" class="form-control" name="secret" required value="<?= $rsdb["secret"] ?? md5(time()) ?>">
                     </div>
                 </div>
                 <div class="col-2">
                     <label>Token life time(min)*</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="number" min=15 max="1440" class="form-control" name="token_min" required value="<?= $rsdb["token_min"] ?? 30 ?>">
                     </div>
                 </div>
                 <div class="col-md-4">
                     <label>Toestemming groep*</label>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <?= PermissionGroupModel::selectMultiple(explode(',', $rsdb["permission_group_ids"] ?? ""), "", 2); ?>
                     </div>
                 </div>
                 <div class="col-12">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <input type="hidden" name="<?= ApiModel::$primaryKey ?>" value="<?= $rsdb[ApiModel::$primaryKey] ?? 0; ?>" />
                         <?= add_csrf_value(); ?>
                         <?= add_submit_button($rsdb) ?>
