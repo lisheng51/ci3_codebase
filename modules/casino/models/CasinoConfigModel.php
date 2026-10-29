@@ -8,6 +8,8 @@ class CasinoConfigModel
 {
     public const DEFAULTS = [
         'casino_google_client_id' => '',
+        'casino_card_login' => '1',
+        'casino_card_register_per_hour' => '5',
         'casino_start_balance' => '1000',
         'casino_daily_bonus' => '200',
         'casino_poll_ms' => '1500',
@@ -71,6 +73,8 @@ class CasinoConfigModel
     public const LABELS = [
         'Algemeen' => [
             'casino_google_client_id' => 'Google Client ID (inloggen)',
+            'casino_card_login' => 'Inloggen met Holland Casino kaart scannen (1 = aan, 0 = uit)',
+            'casino_card_register_per_hour' => 'Nieuwe kaartspelers per IP per uur (0 = geen limiet)',
             'casino_start_balance' => 'Startfiches voor een nieuwe speler',
             'casino_daily_bonus' => 'Dagelijkse bonus (0 = uit)',
             'casino_poll_ms' => 'Verversen tafel (milliseconden)',

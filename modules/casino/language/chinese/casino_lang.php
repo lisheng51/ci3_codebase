@@ -412,3 +412,15 @@ $lang["casino_js_board_start"] = '开始对局（下注 {stake}）';
 $lang["casino_js_board_promote"] = '兵升变为';
 $lang["casino_js_ddz_bomb_fx"] = '炸弹！x{n}';
 $lang["casino_js_ddz_rocket_fx"] = '王炸！x{n}';
+
+// Holland Casino card login
+$lang["casino_card_login"] = '扫描 Holland Casino 会员卡';
+$lang["casino_card_or"] = '或';
+$lang["casino_card_scan_hint"] = '把 Holland Casino 会员卡上的条形码或二维码对准摄像头。';
+$lang["casino_card_number"] = '卡号';
+$lang["casino_card_manual"] = '卡号（也可以用扫码枪）';
+$lang["casino_card_go"] = '登录';
+$lang["casino_card_invalid"] = '这个卡号无法登录。';
+$lang["casino_card_too_many"] = '这个网络注册的新卡太多了，请稍后再试。';
+$lang["casino_card_no_camera"] = '无法使用摄像头，请手动输入卡号。';
+$lang["casino_card_close"] = '关闭';

@@ -273,6 +273,70 @@ class CasinoUserModel
         return $id;
     }
 
+    /** Card number from a scan or typed in: capitals and digits only, '' when it does not look like a card number. */
+    public static function normalizeCardNumber(string $number = ''): string
+    {
+        $number = strtoupper(preg_replace('/[\s\-.]+/', '', trim($number)));
+        return preg_match('/^[A-Z0-9]{6,32}$/', $number) ? $number : '';
+    }
+
+    /**
+     * Logs in with a Holland Casino membership card (barcode / QR code scanned with the camera or a hand scanner).
+     * The card number itself is never stored, only a keyed hash in google_sub ("card:<hash>"); the player is created
+     * with the start chips on the first scan.
+     * Returns the player id, 0 when the number is not valid or card login is off, -1 when the player is blocked,
+     * -2 when this IP made too many new card players in the last hour.
+     */
+    public static function loginWithCard(string $number = ''): int
+    {
+        $number = self::normalizeCardNumber($number);
+        if ($number === '' || !CasinoConfigModel::bool('casino_card_login')) {
+            return 0;
+        }
+
+        $sub = 'card:' . substr(hash_hmac('sha256', 'holland-casino:' . $number, (string)config_item('encryption_key')), 0, 56);
+        $data = [
+            'last_login_at' => date('Y-m-d H:i:s'),
+            'last_seen_at' => date('Y-m-d H:i:s'),
+        ];
+        $exist = CIDb()->query('SELECT * FROM ' . self::tableName() . ' WHERE google_sub = ?', [$sub])->row_array();
+        if (empty($exist)) {
+            // a new card gives start chips: limit how many new cards one IP can register
+            $limit = CasinoConfigModel::int('casino_card_register_per_hour');
+            $recent = CIDb()->query(
+                'SELECT COUNT(*) AS n FROM ' . CIDb()->dbprefix('casino_log') . " WHERE action = 'register' AND ip = ? AND detail LIKE 'Holland Casino%' AND created_at > NOW() - INTERVAL 1 HOUR",
+                [(string)CIInput()->ip_address()]
+            )->row_array();
+            if ($limit > 0 && (int)($recent['n'] ?? 0) >= $limit) {
+                return -2;
+            }
+            $data['google_sub'] = $sub;
+            $data['email'] = '';
+            $data['name'] = 'HC-' . substr($number, -4);
+            $data['picture'] = '';
+            $data['balance'] = CasinoConfigModel::int('casino_start_balance');
+            CIDb()->insert(self::$table, $data);
+            $id = (int)CIDb()->insert_id();
+            if ($id <= 0) {
+                return 0;
+            }
+            CasinoLogModel::write($id, 'register', (int)$data['balance'], 'Holland Casino kaart ' . $data['name']);
+        } else {
+            $id = (int)$exist[self::$primaryKey];
+            if (empty($exist['is_active'])) {
+                CasinoLogModel::write($id, 'login', 0, 'Holland Casino kaart: geblokkeerd, inloggen geweigerd');
+                return -1;
+            }
+            CIDb()->where(self::$primaryKey, $id)->update(self::$table, $data);
+        }
+
+        CISession()->sess_regenerate();
+        CISession()->unset_userdata(self::$noBackOfficeKey);
+        CISession()->set_userdata(self::$sessionKey, [self::$primaryKey => $id, 'seen' => time()]);
+        CasinoLogModel::write($id, 'login', 0, 'Holland Casino kaart ' . ($exist['name'] ?? $data['name']));
+        return $id;
+    }
+
     public static function logout(bool $log = true)
     {
         $id = self::userId();

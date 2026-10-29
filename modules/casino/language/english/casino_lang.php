@@ -412,3 +412,15 @@ $lang["casino_js_board_start"] = 'Start a game (stake {stake})';
 $lang["casino_js_board_promote"] = 'Promote to';
 $lang["casino_js_ddz_bomb_fx"] = 'BOMB! x{n}';
 $lang["casino_js_ddz_rocket_fx"] = 'ROCKET! x{n}';
+
+// Holland Casino card login
+$lang["casino_card_login"] = 'Scan Holland Casino card';
+$lang["casino_card_or"] = 'or';
+$lang["casino_card_scan_hint"] = 'Hold the barcode or QR code of your Holland Casino card in front of the camera.';
+$lang["casino_card_number"] = 'Card number';
+$lang["casino_card_manual"] = 'Card number (or use a hand scanner)';
+$lang["casino_card_go"] = 'Sign in';
+$lang["casino_card_invalid"] = 'This card number cannot be used to sign in.';
+$lang["casino_card_too_many"] = 'Too many new cards from this connection. Please try again later.';
+$lang["casino_card_no_camera"] = 'The camera cannot be used. Type the card number instead.';
+$lang["casino_card_close"] = 'Close';
